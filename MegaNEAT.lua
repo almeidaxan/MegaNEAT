@@ -1,13 +1,3 @@
---TODO (most important on top)
---[[ 
-+ Create a loop to automatically update broken/dynamic tiles
-+ Output the minimap matrix in getInputs() to serve as input to the NEAT algorithm
-+ Rewrite minimap drawing by using its top-left corner as the origin (instead of its center)
-+ Disregard dynamic tiles as items
-+ Fix wonky enemies, bullets and items positions on the minimap
-+ Disregard weapon replenish collectibles as items, since they have no effect on this stage
-]]
-
 ---AUXILIARY FUNCTIONS
 --Auxiliary function to search for a specific value inside of a table (vector)
 function hasValue(tab, val)
