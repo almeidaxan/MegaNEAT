@@ -1,5 +1,5 @@
 ---AUXILIARY FUNCTIONS
---Auxiliary function to search for a specific value inside of a table (vector)
+--Auxiliary function to search for a specific value inside of a table/vector
 function hasValue(tab, val)
     for index, value in ipairs(tab) do
         if value == val then
@@ -11,9 +11,8 @@ function hasValue(tab, val)
 end
 
 ---GLOBAL VARIABLES
-MinimapCenterX = 50 --Minimap center X position
-MinimapCenterY = 50 --Minimap center Y position
-MinimapRadius = 8 --Minimap box radius, in term of its units
+MinimapOriginX = 25 --Minimap origin X position
+MinimapOriginY = 10 --Minimap origin Y position
 MinimapUnitSize = 5 --Size in pixels of the minimap square units (must be an odd number)
 ScreenDimX = 256 --Screen X dimension in pixels
 ScreenDimY = 224 --Screen Y dimension in pixels
@@ -27,16 +26,16 @@ SolidTiles = {68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 83, 84, 89
 			757, 758, 759, 761, 762, 763, 764, 765, 766, 781, 783, 785, 786, 788,
 			790, 792, 793, 794, 795, 796, 797, 798, 799, 825} --Tile values that are solid, in decimal
 
-local stageL = 32 --Stage lines of tiles = 2 scenes * 16 tiles = 32 lines of tiles
+local stageR = 32 --Stage rows of tiles = 2 scenes * 16 tiles = 32 rows of tiles
 local stageC = 512 --Stage columns of tiles = 32 scenes * 16 tiles = 512 columns of tiles
 local stageS = {01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16,
 				17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 29, 30,
 				00, 00, 00, 00, 00, 00, 00, 00, 00, 31, 32, 33, 34, 35, 00, 00,
-				00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00} -- Stage scenes ID ordering
+				00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00} --Ordering of stage scene IDs
 
---Initializing the matrix of stage tiles with zeroes
+--Initializing the stage tiles matrix with zeroes
 StageTiles = {}
-for i=1,stageL do
+for i=1,stageR do
 	StageTiles[i] = {}
 	for j=1,stageC do
 		StageTiles[i][j] = 0
@@ -59,24 +58,12 @@ for s=1,#stageS do
 	end
 end
 
---Overwrite these specific positions as solid, since they were masked by the up-layer
+--Overwrite these specific positions as solid tiles, since they are wrongly masked by the up-layer
 StageTiles[9][1] = 1; StageTiles[9][2] = 1; StageTiles[9][3] = 1
 StageTiles[10][1] = 1; StageTiles[10][2] = 1; StageTiles[10][3] = 1
 StageTiles[11][1] = 1; StageTiles[11][2] = 1; StageTiles[11][3] = 1
 
 ---FUNCTIONS
---Function to draw objects onto the minimap
-function drawObjects(object, color)
-	gui.drawBox(
-		MinimapCenterX + MinimapUnitSize * object.x - math.floor(MinimapUnitSize / 2),
-		MinimapCenterY + MinimapUnitSize * object.y - math.floor(MinimapUnitSize / 2),
-		MinimapCenterX + MinimapUnitSize * object.x + math.floor(MinimapUnitSize / 2),
-		MinimapCenterY + MinimapUnitSize * object.y + math.floor(MinimapUnitSize / 2),
-		color,
-		color
-	)
-end
-
 --Function to retrieve the top-left X,Y positions of all rendered enemies sprites
 function getEnemies()
 	local enemies = {}
@@ -128,22 +115,30 @@ function getItems()
 	return items
 end
 
---Function to map a object screen positions to the minimap coordinate system
-function getPosMap(objX, objY, screenCenterX, screenCenterY)
-	local pos = {}
+--Function to draw objects (enemies, bullets, items, and Mega Man) onto the minimap and update the input matrix
+function drawObjects(object, color, screenX, screenY, MinimapOriginX, MinimapOriginY, inputMatrix, inputMatrixValue)
+	local posX = math.floor((object.x - screenX) / 16)
+	local posY = math.floor((object.y - screenY) / 16)
 
-	pos.x = math.floor((MinimapRadius * 2) * (objX - screenCenterX) / ScreenDimX)
-	pos.y = math.floor((MinimapRadius * 2 - 2) * (objY - screenCenterY) / ScreenDimY)
+	if posX >= 0 and posX <= 15 and posY >= 0 and posY <= 13 then
+		if inputMatrixValue ~= -1 then
+			inputMatrix[posY + 1][posX + 1] = inputMatrixValue
+		end
 
-	if pos.x < -MinimapRadius		then pos.x = 100 end
-	if pos.x > MinimapRadius		then pos.x = 100 end
-	if pos.y < (-MinimapRadius + 1)	then pos.y = 100 end
-	if pos.y > (MinimapRadius - 2)	then pos.y = 100 end
+		gui.drawBox(
+			MinimapOriginX + MinimapUnitSize * posX + 1,
+			MinimapOriginY + MinimapUnitSize * posY + 1,
+			MinimapOriginX + MinimapUnitSize * posX + MinimapUnitSize,
+			MinimapOriginY + MinimapUnitSize * posY + MinimapUnitSize,
+			color,
+			color
+		)
+	end
 
-	return pos
+	return inputMatrix
 end
 
---Function to get the tiles indexes from StageTiles based on the current screen extent
+--Get the tiles indexes from StageTiles based on the current screen extent
 function getTiles(screenX, screenY)
 	local xL = math.ceil((screenX + 1) / 16)
 	local xU = xL + 15
@@ -153,8 +148,8 @@ function getTiles(screenX, screenY)
 	return {xL, xU, yL, yU}
 end
 
---Watch specific dynamic tiles from scenes an update StageTiles info if they chage to a solid tile
-function updateTiles(sceneID, iL, iU, jL, jU)
+--Observe specific dynamic tiles and update StageTiles matrix if they chage from a non-solid to a solid tile
+function observeTiles(sceneID, iL, iU, jL, jU)
 	for i=iL,iU do
 		for j=jL,jU do
 			local pos = ((i - 1) % 16) * 16 + ((j - 1) % 16 + 1) 
@@ -163,7 +158,37 @@ function updateTiles(sceneID, iL, iU, jL, jU)
 	end
 end
 
---Function to draw the minimap, get all inptus, draw them on map, and return a matrix of inputs
+--Runs observeTiles for specific tile ranges
+function updateTiles()
+	observeTiles(5, 7, 9, 65, 70)
+	observeTiles(5, 7, 9, 73, 78)
+	observeTiles(6, 8, 10, 89, 94)
+	observeTiles(7, 8, 10, 97, 102)
+	observeTiles(7, 8, 10, 105, 110)
+	observeTiles(8, 8, 10, 113, 118)
+	observeTiles(8, 8, 10, 121, 126)
+	observeTiles(9, 8, 10, 129, 134)
+	observeTiles(11, 8, 10, 161, 174)
+	observeTiles(13, 10, 12, 201, 208)
+	observeTiles(14, 10, 12, 209, 214)
+	observeTiles(16, 8, 10, 249, 250)
+	observeTiles(17, 8, 10, 265, 266)
+	observeTiles(18, 6, 8, 273, 274)
+	observeTiles(18, 6, 8, 277, 278)
+	observeTiles(18, 6, 8, 283, 286)
+	observeTiles(19, 6, 8, 289, 294)
+	observeTiles(19, 8, 10,  301, 302)
+	observeTiles(32, 19, 19, 168, 172)
+	observeTiles(32, 20, 21, 167, 172)
+	observeTiles(32, 22, 24, 162, 173)
+	observeTiles(34, 19, 19, 208, 208)
+	observeTiles(34, 20, 21, 207, 208)
+	observeTiles(34, 22, 24, 202, 208)
+	observeTiles(35, 19, 21, 209, 212)
+	observeTiles(35, 22, 24, 209, 213)
+end
+
+--Function to draw the minimap, get all inputs, draw them onto the minimap, and return a matrix of inputs
 function getInputs()
 	--Screen top-left X,Y positions
 	local screenX = memory.read_s16_le(0x00B4)
@@ -173,30 +198,37 @@ function getInputs()
 	local screenCenterX = math.floor(screenX + ScreenDimX / 2)
 	local screenCenterY = math.floor(screenY + ScreenDimY / 2)
 
-	--Origin of the minimap
-	local minimapOriginX = MinimapCenterX - MinimapUnitSize * (MinimapRadius - 1) - math.ceil(MinimapUnitSize / 2)
-	local minimapOriginY = MinimapCenterY - MinimapUnitSize * (MinimapRadius - 1) - math.ceil(MinimapUnitSize / 2)
+	--Initializing the input matrix
+	inputs = {}
+	for i=1,14 do
+		inputs[i] = {}
+		for j=1,16 do
+			inputs[i][j] = 0
+		end
+	end
 
 	--Draws the minimap itself
 	gui.drawBox(
-		minimapOriginX,
-		minimapOriginY,
-		MinimapCenterX + MinimapUnitSize * MinimapRadius + math.ceil(MinimapUnitSize / 2),
-		MinimapCenterY + MinimapUnitSize * (MinimapRadius - 2) + math.ceil(MinimapUnitSize / 2),
-		0xFF000000,
+		MinimapOriginX,
+		MinimapOriginY,
+		MinimapOriginX + MinimapUnitSize * 16 + 1,
+		MinimapOriginY + MinimapUnitSize * 14 + 1,
+		0x80000000,
 		0x80808080
 	)
 
-	--Draws solid tiles on the minimap (white)
+	--Draws solid tiles on the minimap (white, value = 1)
 	local tiles = getTiles(screenX, screenY)
 	for i=tiles[3],tiles[4] do
 		for j=tiles[1],tiles[2] do
-			if StageTiles[i][j] == 1 then --If tile is solid, then draw
+			if StageTiles[i][j] == 1 then --If tile is solid, then draw it
+				inputs[i - tiles[3] + 1][(j - tiles[1]) + 1] = 1
+
 				gui.drawBox(
-					minimapOriginX + MinimapUnitSize * (j - tiles[1]) + 1,
-					minimapOriginY + MinimapUnitSize * (i - tiles[3]) + 1,
-					minimapOriginX + MinimapUnitSize * (j - tiles[1]) + MinimapUnitSize,
-					minimapOriginY + MinimapUnitSize * (i - tiles[3]) + MinimapUnitSize,
+					MinimapOriginX + MinimapUnitSize * (j - tiles[1]) + 1,
+					MinimapOriginY + MinimapUnitSize * (i - tiles[3]) + 1,
+					MinimapOriginX + MinimapUnitSize * (j - tiles[1]) + MinimapUnitSize,
+					MinimapOriginY + MinimapUnitSize * (i - tiles[3]) + MinimapUnitSize,
 					0xFFFFFFFF,
 					0xFFFFFFFF
 				)
@@ -204,86 +236,45 @@ function getInputs()
 		end
 	end
 
-	--Draws enemies on the minimap (black)
+	--Draws enemies on the minimap (black, value = 2)
 	local enemies = getEnemies()
-	local posEnemies = {}
 	for i=1,#enemies do
-		posEnemies[i] = getPosMap(enemies[i]["x"], enemies[i]["y"], screenCenterX, screenCenterY)
-		if posEnemies[i].x ~= 100 and posEnemies[i].y ~= 100 then
-			drawObjects(posEnemies[i], 0xFF000000)
-		end
+		inputs = drawObjects(enemies[i], 0xFF000000, screenX, screenY, MinimapOriginX, MinimapOriginY, inputs, 2)
 	end
 
-	--Draws enemies' bullets on the minimap (blue)
+	--Draws enemies' bullets on the minimap (red, value = 3)
 	local bullets = getBullets()
-	local posBullets = {}
 	for i=1,#bullets do
-		posBullets[i] = getPosMap(bullets[i]["x"], bullets[i]["y"], screenCenterX, screenCenterY)
-		if posBullets[i].x ~= 100 and posBullets[i].y ~= 100 then
-			drawObjects(posBullets[i], 0xFF0000FF)
-		end
+		inputs = drawObjects(bullets[i], 0xFFFF0000, screenX, screenY, MinimapOriginX, MinimapOriginY, inputs, 3)
 	end
 
-	--Draws items on the minimap (magenta)
+	--Draws items on the minimap (magenta, value = 4)
 	local items = getItems()
-	local posItems = {}
 	for i=1,#items do
-		posItems[i] = getPosMap(items[i]["x"], items[i]["y"], screenCenterX, screenCenterY)
-		if posItems[i].x ~= 100 and posItems[i].y ~= 100 then
-			drawObjects(posItems[i], 0xFFFF00FF)
-		end
+		inputs = drawObjects(items[i], 0xFFFF00FF, screenX, screenY, MinimapOriginX, MinimapOriginY, inputs, 4)
 	end
 
-	--Draws Megaman on the minimap (red)
-	local megaX = memory.read_s16_le(0x0BAD) + 15 -- +15 corrects Megaman's sprite X position to the center
-	local megaY = memory.read_s16_le(0x0BB0)
-	local posMega = getPosMap(megaX, megaY, screenCenterX, screenCenterY)
-	gui.drawBox(
-		MinimapCenterX + MinimapUnitSize * posMega.x - 1,
-		MinimapCenterY + MinimapUnitSize * posMega.y - math.ceil(MinimapUnitSize / 2),
-		MinimapCenterX + MinimapUnitSize * posMega.x + 1,
-		MinimapCenterY + MinimapUnitSize * posMega.y + math.ceil(MinimapUnitSize / 2),
-		0x00FF0000,
-		0xFFFF0000
-	)
-	
+	--Draws Mega Man on the minimap (blue, value = 5)
+	local mega = {["x"] = memory.read_s16_le(0x0BAD) + 5, --Adding '15' to correct the X position
+				  ["y"] = memory.read_s16_le(0x0BB0) + 10} --Adding '10' to correct the Y position
+	inputs = drawObjects(mega, 0xFF0000FF, screenX, screenY, MinimapOriginX, MinimapOriginY, inputs, 5)
 
-end
-
-function updateGround()
-	updateTiles(5, 7, 9, 65, 70)
-	updateTiles(5, 7, 9, 73, 78)
-	updateTiles(6, 8, 10, 89, 94)
-	updateTiles(7, 8, 10, 97, 102)
-	updateTiles(7, 8, 10, 105, 110)
-	updateTiles(8, 8, 10, 113, 118)
-	updateTiles(8, 8, 10, 121, 126)
-	updateTiles(9, 8, 10, 129, 134)
-	updateTiles(11, 8, 10, 161, 174)
-	updateTiles(13, 10, 12, 201, 208)
-	updateTiles(14, 10, 12, 209, 214)
-	updateTiles(16, 8, 10, 249, 250)
-	updateTiles(17, 8, 10, 265, 266)
-	updateTiles(18, 6, 8, 273, 274)
-	updateTiles(18, 6, 8, 277, 278)
-	updateTiles(18, 6, 8, 283, 286)	
-	updateTiles(19, 6, 8, 289, 294)
-	updateTiles(19, 8, 10,  301, 302)
-	updateTiles(32, 19, 19, 168, 172)
-	updateTiles(32, 20, 21, 167, 172)
-	updateTiles(32, 22, 24, 162, 173)
-	updateTiles(34, 19, 19, 208, 208)
-	updateTiles(34, 20, 21, 207, 208)
-	updateTiles(34, 22, 24, 202, 208)
-	updateTiles(35, 19, 21, 209, 212)
-	updateTiles(35, 22, 24, 209, 213)
+	return inputs
 end
 
 --MAIN EXECUTION LOOP
 while true do
-	getInputs()
+	updateTiles()
 
-	updateGround()
+	--[[labels of inputs matrix
+	0: empty tiles
+	1: ground
+	2: enemies
+	3: bullets
+	4: items
+	5: Mega Man
+	]]
+	local inputs = getInputs()
 
 	--Advances a frame, otherwise the emulator freezes
 	emu.frameadvance()
