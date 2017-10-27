@@ -105,7 +105,7 @@ function getItems()
 	for slot=0,15 do
 		--Status is used to determine if the object is currently rendered
 		local status = memory.readbyte(0x1628 + slot * 48)
-		if status ~= 0 then
+		if status ~= 0 and memory.readbyte(0x1628 + slot * 48 + 10) == 2 then
 			local itemsX = memory.read_s16_le(0x1628 + slot * 48 + 5)
 			local itemsY = memory.read_s16_le(0x1628 + slot * 48 + 8)
 			items[#items+1] = {["x"] = itemsX, ["y"] = itemsY}
