@@ -1,0 +1,1271 @@
+ROM Map:
+========
+
+$00/8000	36 bytes		SNES reset; Disable interrupts, Emulation mode, IRQ, NMI, DMA, HDMA,
+							Set program bank byte to $80, set data bank byte to $86, enable fastROM,
+							and set and unidentified ram to 00
+
+$80/8024	46 bytes		Setup various registers (will put here later)
+
+$80/8052	11 bytes		Clear most of the RAM
+
+$80/805D	9 bytes			Set stack pointer to 02FF and prepare for next loop
+
+$80/8066	17 bytes		Set values to ram
+
+$80/8077	32 bytes		Set up class pointers and other values
+
+$80/8097	2 bytes			Interrupt routine (Game freeze(?))
+
+$80/8099	8 bytes			Reset stack pointer to 2FF
+
+$80/80A1	10 bytes		'wait for NMI' loop, load 00 into X
+
+$80/80AB	77 bytes		Handles where to go after NMI interrupt
+
+$80/80F8	8 bytes			(Assumed): Reset first class pointer
+
+$80/8100	33 bytes		JSR routines which make the game do nothing for 1 or specified frames
+
+$80/8121	26 bytes		Similar as above but a bit different (?)
+
+$80/813B	12 bytes		Game init routine; set values to pointers
+
+$80/8147	33 bytes		!undetermined
+
+$80/8168	825 bytes		NMI routine
+
+$80/84A1	139 bytes		IRQ routine
+
+$80/852C	352 bytes		Capcom/Nintendo logo code (maybe break down more)
+
+$80/868C
+
+
+
+
+$80/8802	69 bytes		More NMI code
+
+
+
+
+$80/8C2E	8 bytes			Clear Intro/Titlescreen class pointers
+
+$80/8C36	10 bytes		Loop for Intro/Titlescreen class
+
+$80/8C3F	4 bytes			Table of pointers (Intro/Titlescreen class)
+
+$80/8C44	33 bytes		Pointer routine to handle Intro
+
+$80/8C65	8 bytes			Table of pointers to above
+
+$80/8C6D	
+
+
+
+
+
+$80/F2F7	2221 bytes
+
+$80/FBA4	1024 bytes		Unused data (FF)
+
+$80/FFA4	92 bytes		interrupt vector info (+extra info, need to add)
+
+$81/8000	?? bytes		!undetermined
+
+
+
+
+
+$84/C8E0	10194 bytes		Text Data
+
+$86/8000	?? bytes		game init data
+
+
+
+
+
+TOTAL BYTES DETERMINED: ~13968/~1 573 376 = 0.00887% progress
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+7DE3-81A3: EMPTY
+
+10160-101FF: EMPTY
+
+181A3-181FF: EMPTY
+
+2016F-201FF: EMPTY
+
+DIALOGUE #1
+----
+24ACC-27339: Main dialogue (cutscenes, credits, intro)
+
+2733A-281FF: EMPTY
+
+OBJECT PALETTE INFORMATION
+----
+2B900-2B91F: X's main palette (no weapon).
+
+2B920-2B93F: Rush Roader's palette.
+2B940-2B95F: Hoganmer's palette.
+2B960-2B97F: Dodge Blaster's palette.
+2B980-2B99F: Sine Faller's palette.
+
+2B9A0-2B9BF: Boomerang Cutter weapon palette.
+
+2B9C0-2B9DF: X's secondary palette.
+
+2B9E0-2B9FF: Flashing color palette.
+
+2BA00-2BA1F: Flammingle's palette.
+
+((2BA20-2BA3F: MYSTERY PALETTE #1))
+
+2BA40-2BA5F: Planty + Iworm's palette.
+
+2BA60-2BA7F: X Buster weapon palette.
+
+2BA80-2BA9F: Light Capsule palette.
+2BAA0-2BADF: Light Capsule glowing palette.
+
+2BAE0-2BAFF: Homing Torpedo weapon palette.
+2BB00-2BB1F: Chameleon Sting weapon palette.
+
+2BB20-2BB3F: Large stone block's palette.
+2BB40-2BB5F: RT-55J's palette.
+
+((2BB60-2BB7F: MYSTERY PALETTE #2))
+
+2BB80-2BB9F: Boss door's palette.
+2BBA0-2BBBF: Axe Max + Axe wood + falling leaves' palette.
+
+2BBC0-2BBFF: Megaman in Light Capsule flashing palette.
+
+2BC00-2BC1F: Road Attacker's palette.
+2BC20-2BC3F: Crusher's palette.
+2BC40-2BC5F: Spiky's palette.
+
+2BC60-2BC7F: Sting Chameleon + falling spikes' palette.
+
+2BC80-2BC9F: Bomb Been's palette.
+
+((2BCA0-2BCBF: MYSTER PALETTE #3))
+
+2BCC0-2BCDF: Highway breakway platform's palette.
+2BCE0-2BCFF: Road Attacker deployer's palette.
+2BD00-2BD1F: Gulpfer's palette.
+2BD20-2BD3F: Mad Pecker + Creeper's palette.
+2BD40-2BD5F: Sea Attacker's palette.
+2BD60-2BD7F: Amenhopper's palette.
+2BD80-2BD9F: Bee Blader's palette.
+2BDA0-2BDBF: Utuboros' palette.
+2BDC0-2BDDF: Ball De Voux's palette.
+2BDE0-2BDFF: Gun Volt's palette.
+2BE00-2BE1F: Anglerge parts + snake missile's palette.
+2BE20-2BE3F: Boss intro lightning's palette.
+2BE40-2BE5F: Death Rogumer cannon's palette.
+2BE60-2BE5F: Heart Tank palette.
+2BE80-2BE9F: Utuboros sand cloud's palette.
+2BEA0-2BEBF: Highway car's palette.
+2BEC0-2BEDF: Highway trailer trucks's palette.
+2BEE0-2BEFF: Highway van's palette.
+
+2BF00-2BF1F: Final Form Sigma head + eyes + claws' palette.
+2BF20-2BF9F: Final Form Sigma's fade-in palette.
+2BFA0-2BFBF: Final Form Sigma's flames + sparks' palette.
+
+2BFC0-2BFDF: Jellyfish enemy's palette. [UNUSED]
+2BFE0-2BFFF: Cruiziler parts' palette.
+2C000-2C01F: Stage select cursor + map screen dot's palette.
+
+2C020-2C03F: Storm Tornado weapon palette.
+
+2C040-2C05F: Scrap Robo + Broken Utuboros head's palette.
+2C060-2C07F: Scrap Robo + Broken Utuboros head's melting palette.
+2C080-2C09F: Mine cart platform's palette.
+
+2C0A0-2C0BF: Shotgun Ice weapon palette.
+2C0C0-2C0DF: Fire Wave weapon palette.
+2C0E0-2C0FF: Electric Spark weapon palette.
+2C100-2C11F: Rolling Shield weapon palette.
+2C120-2C19F: Charged Rolling Shield weapon palette.
+
+2C1A0-2C2BF: Mole Borer's palette.
+2C1C0-2C1DF: Pink Ride Armor + Pink Armor Soldier's palette.
+2C1E0-2C1FF: Bat Bone's palette.
+2C200-2C21F: Batton M-501's palette.
+2C220-2C23F: Met C-15 + password cursor's palette.
+2C240-2C25F: Crag Man + small stone block + Forest rubble's palette.
+2C260-2C27F: Dig Labour + factory rubble's palette.
+2C280-2C29F: Unknown (Duplicate Dig Labour palette.)
+
+2C2A0-2C2BF: Vile + Vile's first ride armor's palette.
+
+2C2C0-2C2DF: Zero's palette.
+2C2E0-2C31F: Zero's Beta charging palette?
+2C320-2C33F: Zero's charged shot's palette.
+
+2C340-2C37F: Password screen number's palette.
+2C380-2C39F: Password screen cursor's palette.
+2C3A0-2C3BF: Hotarion's palette.
+2C3C0-2C3DF: Metal Wing's palette.
+2C3E0-2C3FF: Conveyor belt crusher's palette.
+2C400-2C41F: Jamminger's palette.
+
+((2C420-2C43F: MYSTERY PALETTE #4))
+
+2C440-2C45F: Airport conveyor platform's palette.
+2C460-2C47F: Flamer + floating platform's palette.
+2C480-2C49F: Thunder Slimer's palette.
+
+2C4A0-2C4BF: Armored Armadillo + spark palette.
+2C4C0-2C51F: Armored Armadillo's charging palette.
+2C520-2C53F: Armored Armadillo's rubble palette.
+
+2C540-2C55F: Tombot's palette.
+2C560-2C57F: Thunder Slimer's slime blob + electric bolt's palette.
+
+2C580-2C59F: Chill Penguin palette.
+2C5A0-2C5BF: Chill Penguin's iceball + sculpture palette.
+2C5C0-2C5DF: Unknown (Duplicate Chill Penguin palette, unused)
+2C5E0-2C5FF: Unknown (Chill Penguin palette, but all colors are black)
+
+2C600-2C61F: Slide Cannon + sliding platform's palette.
+2C620-2C63F: Spring's palette.
+
+2C640-2C65F: X's charged palette.
+2C660-2C67F: X's supercharged palette.
+
+2C680-2C69F: Floating laser trap + laser's palette.
+
+2C6A0-2C6BF: Boomer Kuwanger + boomerang palette.
+2C6C0-2C6DF: Boomer Kuwanger's afterimage palette.
+
+2C6E0-2C6FF: Launch Octopus + Homing Torpedo's palette.
+2C700-2C73F: Launch Octopus' E.Drain palette.
+2C740-2C75F: Launch Octopus' fish missile palette.
+2C760-2C77F: Launch Octopus' twister palette.
+
+2C780-2C79F: Ladder Yadder's palette.
+
+((2C7A0-2C7BF: MYSTERY PALETTE #5))
+
+2C7C0-2C7DF: Tower elevator platform's palette.
+2C7E0-2C7FF: Power plant spark's palette.
+2C800-2C81F: Flame pillar's palette.
+
+2C820-2C83F: Dummy palette (Palette is completely black)
+
+2C840-2C85F: Shattering glass pane's palette.
+
+2C860-2C87F: Dummy palette (Palette is black except for transparent color)
+
+2C880-2C89F: Sky Claw's palette.
+2C8A0-2C8BF: Cruiziler missile's palette.
+
+2C8C0-2C8DF: Flame Mammoth + oil + flame's palette.
+2C8E0-2C8FF: Unknown (Duplicate Flame Mammoth palette. Used for trunk?)
+2C900-2C91F: Flame Mammoth's oil fire palette.
+
+2C920-2C93F: Rolling Gabyool + lava drip's palette.
+2C940-2C95F: Ray Bit's palette.
+
+2C960-2C97F: "Weapon Acquired" X's default object palette.
+
+2C980-2C99F: Snow Shooter's palette.
+
+2C9A0-2C9BF: Storm Eagle + eagret palette.
+2C9C0-2C9DF: Storm Eagle's Storm Tornado palette.
+
+2C9E0-2C9FF: Rolling snowball's palette.
+2CA00-2CA1F: Turn Cannon + Turn Cannon's floating platform's + long pillar's palette.
+
+((2CA20-2CA3F: MYSTERY PALETTE #6))
+
+2CA40-2CA5F: Spark Mandrill's palette.
+2CA60-2CA7F: Spark Mandrill's frozen palette.
+2CA80-2CA9F: Spark Mandrill's Electric Spark palette.
+2CAA0-2CABF: Spark Mandrill's groundshock palette.
+
+2CAC0-2CADF: Igloo rubble's palette.
+2CAE0-2CAFF: Green Ride Armor + Green Armor Soldier's palette.
+2CB00-2CB1F: Mega Tortoise's palette.
+
+2CB20-2CB3F: Velguarder + flames' palette.
+2CB40-2CB5F: Velguarder's spark palette.
+
+2CB60-2CB7F: Rangda Bangda green eye + nose's palette.
+2CB80-2CB9F: Rangda Bangda blue eye's palette.
+2CBA0-2CBBF: Rangda Bangda red eye's palette.
+2CBC0-2CBDF: Rangda Bangda closing wall's palette.
+2CBE0-2CC5F: Rangda Bangda fading in palette.
+
+2CC60-2CC7F: Vile's cage's force field + cage parts' palette.
+
+2CC80-2CC9F: Bospider + Bospider baby's palette.
+2CCA0-2CCBF: Bospider's retracting thread palette.
+
+2CCC0-2CCDF: D-Rex's head palette.
+2CCE0-2CCFF: D-Rex plasma ball's palette.
+2CD00-2CD1F: D-Rex's charging palette.
+
+2CD20-2CD3F: Sigma's palette.
+2CD40-2CD5F: Sigma's cape palette.
+
+((2CD60-2CD7F: MYSTERY PALETTE #7))
+
+2CD80-2CD9F: X specification screen analyzer's palette.
+2CDA0-2CDBF: Airport rubble's palette.
+2CDC0-2CDDF: Mine small rubble's palette.
+2CDE0-2CDFF: Sigma's flying fortress explosion + splash's palette.
+2CE00-2CE1F: Sigma's flying fortress' palette.
+2CE20-2CE3F: Vile's second ride armor's palette.
+
+2CE40-2CE5F: X's Homing.T palette.
+2CE60-2CE7F: X's C.Sting palette.
+2CE80-2CE9F: X's S.Ice palette.
+2CEA0-2CEBF: X's B.Cutter palette.
+2CEC0-2CEDF: X's Storm.T palette.
+2CEE0-2CEFF: X's E.Spark palette.
+2CF00-2CF1F: X's Fire.W palette.
+2CF20-2CF3F: X's R.Shield palette.
+2CF40-2D03F: Chameleon Sting rotating color palette.
+2D040-2D05F: "Weapon Acquired" X's Homing.T object palette.
+2D060-2D07F: "Weapon Acquired" X's C.Sting object palette.
+2D080-2D09F: "Weapon Acquired" X's Storm.T object palette.
+2D0A0-2D0BF: "Weapon Acquired" X's Fire.W object palette.
+2D0C0-2D0DF: "Weapon Acquired" X's R.Shield object palette.
+2D0E0-2D0FF: "Weapon Acquired" X's E.Spark object palette.
+2D100-2D11F: "Weapon Acquired" X's B.Cutter object palette.
+2D120-2D13F: "Weapon Acquired" X's S.Ice object palette.  
+
+BACKGROUND PALETTE INFORMATION
+----
+2D140-2D15F: "Weapon Acquired" X's Homing.T background palette.
+2D160-2D17F: "Weapon Acquired" X's C.Sting background palette.
+2D180-2D19F: "Weapon Acquired" X's Storm.T background palette.
+2D1A0-2D1BF: "Weapon Acquired" X's Fire.W background palette.
+2D1C0-2D1DF: "Weapon Acquired" X's R.Shield background palette.
+2D1E0-2D1FF: "Weapon Acquired" X's E.Spark background palette.
+2D200-2D21F: "Weapon Acquired" X's B.Cutter background palette.
+2D220-2D23F: "Weapon Acquired" X's S.Ice background palette.
+2D240-2D25F: "Weapon Acquired" R.shield device palette.
+2D260-2D27F: "Weapon Acquired" C.Sting device palette.
+2D280-2D29F: "Weapon Acquired" E.Spark device palette.
+2D2A0-2D2BF: "Weapon Acquired" Fire.W device palette.
+2D2C0-2D2DF: "Weapon Acquired" S.Ice device palette.
+2D2E0-2D2FF: "Weapon Acquired" Homing.T device palette.
+2D300-2D31F: "Weapon Acquired" B.Cutter device palette.
+2D320-2D33F: "Weapon Acquired" Storm.T device palette.
+2D340-2D37F: Dialogue palette.
+2D380-2D47F: Sting Chameleon stage main palette.
+2D480-2D57F: Armored Armadillo stage main palette.
+2D580-2D67F: Flame Mammoth stage main palette (lava).
+2D680-2D71F: Title screen palette.
+2D720-2D81F: Highway stage palette.
+2D820-2D83F: Storm Eagle alt. palette #1.
+2D840-2D87F: Highway stage alt. palette #2.
+2D880-2D89F: Highway stage alt. palette #1.
+2D8A0-2D91F: Large Capcom logo flashing palette.
+2D920-2DA1F: Launch Octopus stage main palette.
+2DA20-2DADF: Boss intro screen palette.
+2DAE0-2DAFF: Launch Octopus alt. palette #2.
+2DB00-2DB7F: Launch Octopus cycling water palette.
+2DB80-2DBBF: Launch Octopus alt. palette #4.
+2DBC0-2DBFF: Launch Octopus alt. palette #1.
+2DC00-2DC1F: Launch Octopus alt. palette #3.
+2DC20-2DCBF: Stage select main palette.
+2DCC0-2DCDF: Stage select map picture palette.
+2DCE0-2DCFF: Stage select boss spec palette.
+2DD00-2DD1F: Stage select Megaman X icon palette.
+2DD20-2DD3F: Title screen small Capcom logo palette.
+2DD40-2DD5F: Launch Octopus stage picture palette.
+2DD60-2DD7F: Armored Armadillo stage picture palette.
+2DD80-2DD9F: Sting Chamleon stage picture palette.
+2DDA0-2DDBF: Flame Mammoth stage picture palette.
+2DDC0-2DDDF: Storm Eagle stage picture palette.
+2DDE0-2DDFF: Chill Penguin stage picture palette.
+2DE00-2DE1F: Spark Mandrill stage picture palette.
+2DE20-2DE3F: Boomer Kuwanger stage picture palette.
+2DE40-2DF3F: Storm Eagle stage main palette.
+2DF40-2DFFF: Sting Chameleon alt. palette #1.
+2E000-2E0BF: Sting Chameleon alt. palette #2.
+2E0C0-2E0DF: Armored Armadillo alt. rock palette [UNUSED]
+2E0E0-2E1DF: Weapons / Password screen palette.
+2E1E0-2E29F: Sting Chameleon boss room palette.
+2E2A0-2E2FF: Armored Armadillo alt. palette #1.
+2E300-2E35F: Armored Armadillo cycling waterfall background palette.
+2E360-2E3DF: Armored Armadillo cycling water background palette.
+2E3E0-2E4DF: Spark Mandrill stage main palette.
+2E4E0-2E5DF: Chill Penguin stage main palette.
+2E5E0-2E63F: Flame Mammoth cycling lava + conveyor belt palette.
+2E640-2E65F: Flame Mammoth alternate palette #1.
+2E660-2E7DF: Flame Mammoth cycling lights + lava river palette.
+2E7E0-2E83F: Options menu palette.
+2E840-2E93F: Boomer Kuwanger stage main palette.
+2E940-2E9FF: Storm Eagle cycling conveyor belt + clouds palette.
+2EA00-2EA3F: Storm Eagle alternate palette #2.
+2EA40-2EADF: Storm Eagle cycling light palette.
+2EAE0-2EAFF: "Weapon Acquired" regular X palette.
+2EB00-2EB1F: "Weapon Acquired" border palette.
+2EB20-2EB3F: "Weapon Acquired" flashing device palette.
+2EB40-2EB5F: Chill Penguin alt. palette #1.
+2EB60-2EBBF: Chill Penguin alt. palette #2.
+2EBC0-2ECBF: Boomer Kuwanger alt. palette #1.
+2ECC0-2ECFF: Spark Mandrill cycling yellow electricity palette.
+2ED00-2ED5F: Spark Mandrill cycling green electricity palette. 
+2ED60-2ED7F: Spark Mandrill alt. palette #1.
+2ED80-2EDBF: Spark Mandrill alt. palette #2.
+2EDC0-2EEBF: Sigma Stage 1 main palette.
+2EEC0-2EFBF: Sigma Stage 2 main palette.
+2EFC0-2F0BF: Flame Mammoth stage main palette (Frozen).
+2F0C0-2F0DF: Stage select Sigma icon palette.
+2F0E0-2F0FF: Sigma stage picture palette.
+2F100-2F1FF: Sigma Stage 3 main palette.
+2F200-2F23F: Sigma Stage 3 cycling water palette.
+2F240-2F29F: Sigma Stage 3 conveyor belt palette.
+2F2A0-2F2BF: Sigma Stage 3 alt. palette #1.
+2F2C0-2F2DF: Sigma Stage 3 D-Rex body flashing palette.
+2F2E0-2F3DF: Sigma Stage 4 main palette.
+2F3E0-2F45F: Boss Intro Sigma symbol fading palette.
+2F460-2F4BF: Sting Chameleon cycling water palette.
+2F4C0-2F4FF: DUMMY PALETTE
+2F500-2F53F: Flame Mammoth cycling lava + conveyor belt palette (Frozen).
+2F540-2F57F: Sigma Stage 1 flashing light palette.
+2F580-2F63F: Sigma Stage 1 alt. palette #1.
+2F640-2F69F: Sigma Stage 2 cycling light palettes.
+2F6A0-2F6DF: Sigma Stage 2 alt. palette #3.
+2F6E0-2F6FF: Sigma Stage 2 att. palette #4.
+2F700-2F73F: Sigma Stage 2 alt. palette #1.
+2F740-2F77F: DUMMY PALETTE
+2F780-2F79F: Megaman X specification screen green outline palette.
+2F7A0-2F83F: DUMMY PALETTE
+2F840-2F89F: Megaman X specification screen fading palette.
+2F8A0-2F8BF: Megaman X specification screen palette.
+2F8C0-2F8DF: Spark Mandrill shut-off yellow electricity palette.
+2F8E0-2F8FF: Spark Mandrill shut-off green electricity palette. 
+2F900-2F91F: Spark Mandrill plane wreckage palette.
+2F920-2F93F: Sigma Stage 1 alt. palette #2.
+2F940-2F95F: Sigma Stage 1 alt. palette #3.
+2F960-2F97F: Sigma Stage 1 alt. palette #4 (8 bosses defeated cutscene).
+2F980-2FA5F: Sigma Stage 2 brightening background palette.
+2FA60-2FA7F: Sigma Stage 2 alt. palette #2.
+2FA80-2FAFF: Sigma Stage 2 fade-in boss palette.
+2FB00-2FCFF: Sigma Stage 4 fade-in boss palette.
+2FD00-2FE5F: Cast roll fading foreground palette.
+2FE60-2FFFF: Cast roll fading background palette.
+30000-3001F: Dr. Light warning screen palette.
+30020-3003F: Credits palette.
+30040-3007F: Ending cutscene palette.
+30080-300FF: Ending cutscene flashing cliff palette.
+30100-3019F: Credits fading palette.
+301A0-301FF: EMPTY
+
+MUSIC SETTINGS
+----
+30AB0: Highway stage music.
+30AB1: Launch Octopus stage music.
+30AB2: Sting Chameleon stage music.
+30AB3: Armored Armadillo stage music.
+30AB4: Flame Mammoth stage music.
+30AB5: Storm Eagle stage music.
+30AB6: Spark Mandrill stage music.
+30AB7: Boomer Kuwanger stage music.
+30AB8: Chill Penguin stage music.
+30AB9: Sigma stage 1 music.
+30ABA: Sigma stage 2 music.
+30ABB: Sigma stage 3 music.
+30ABC: Sigma stage 4 music.
+
+DIALOGUE #2
+----
+3141C-327DC: Other dialogue (Boss specs, options, copyright info, debug?)
+
+LOADING POINTS
+----
+The loading point format is as follows, where A represents a hexidecimal number:
+ABCDDEEFFGGHHIIJJKKLLMMNNOOPQ
+A = Object loader value. Values do different things in different levels.
+B =  loader value. 
+C = Palette loader value. 
+D = X location of Megaman X.
+E = Y location of Megaman X.
+F = X location of left side of screen.
+G = Y location of bottom side of screen.
+H = X offset of background. Background is
+    moved to the left by EE pixels before
+    X appears onscreen.
+I = Y offset of background. Background is
+    moved up by FF pixels.
+J = Border for left side of screen. The screen cannot
+    move past this point, nor can X.
+K = Border for right side of screen.
+L = Border for top side of screen.
+M = Border for bottom side of screen.
+N = Forced X offset. Differs from H in that the 
+    background will not try to correct itself based
+    on X's position. It's also applied after X appears
+    on screen, not before.
+O = Forced Y offset.
+P = Background scrolling modifier. Affects how background
+    scrolls. Needs more research.
+Q = Teleport modifier. Affects how far down X goes after he
+    has been teleported.
+
+329F2-32A0E: Loading point #1 (Highway stage)
+32A0F-32A2B: Loading point #2 (Highway stage)
+32A2C-32A48: Loading point #3 (Highway stage)
+32A49-32A65: Loading point #4 (SPECIAL: Cast roll)
+32A66-32A82: Loading point #1 (Launch Octopus)
+32A83-32A9F: Loading point #2 (Launch Octopus)
+32AA0-32ABC: Loading point #3 (Launch Octopus)
+32ABD-32AD9: Loading point #1 (Sting Chameleon)
+32ADA-32AF6: Loading point #2 (Sting Chameleon)
+32AF7-32B13: Loading point #3 (Sting Chameleon)
+32B14-32B30: Loading point #1 (Armored Armadillo)
+32B31-32B4D: Loading point #2 (Armored Armadillo)
+32B4E-32B6A: Loading point #3 (Armored Armadillo)
+32B6B-32B87: Loading point #1 (Flame Mammoth)
+32B88-32BA4: Loading point #2 (Flame Mammoth)
+32BA5-32BC1: Loading point #3 (Flame Mammoth)
+32BC2-32BDE: Loading point #1 (Storm Eagle)
+32BDF-32BFB: Loading point #2 (Storm Eagle)
+32BFC-32C18: Loading point #3 (Storm Eagle)
+32C19-32C35: Loading point #1 (Spark Mandrill)
+32C36-32C52: Loading point #2 (Spark Mandrill)
+32C53-32C6F: Loading point #3 (Spark Mandrill)
+32C70-32C8C: Loading point #1 (Boomer Kuwanger)
+32C8D-32CA9: Loading point #2 (Boomer Kuwanger)
+32CAA-32CC8: Loading point #3 (Boomer Kuwanger)
+32CC7-32CE3: Loading point #1 (Chill Penguin)
+32CE4-32D00: Loading point #2 (Chill Penguin)
+32D01-32D1D: Loading point #3 (Chill Penguin)
+32D1E-32D3A: Loading point #1 (Sigma stage 1)
+32D3B-32D57: Loading point #2 (Sigma stage 1)
+32D58-32D74: Loading point #3 (Sigma stage 1)
+32D75-32D91: Loading point #4 (SPECIAL: 8 bosses defeated cutscene)
+32D92-32DAE: Loading point #5 (Sigma stage 1)
+32DAF-32DCB: Loading point #1 (Sigma stage 2)
+32DCC-32DE8: Loading point #2 (Sigma stage 2)
+32DE9-32E05: Loading point #3 (Sigma stage 2)
+32E06-32E22: Loading point #4 (Sigma stage 2)
+32E23-32E3F: Loading point #1 (Sigma stage 3)
+32E40-32E5C: Loading point #2 (Sigma stage 3)
+32E5D-32E79: Loading point #3 (Sigma stage 3)
+32E7A-32E96: Loading point #4 (Sigma stage 3)
+32E97-32EB3: Loading point #5 (Sigma stage 3)
+32EB4-32ED0: Loading point #6 (Sigma stage 3)
+32ED1-32EED: Loading point #1 (Sigma stage 4)
+
+32EEE-32EEF: Loading pointer (Highway stage)
+32EF0-32EF1: Loading pointer (Launch Octopus)
+32EF2-32EF3: Loading pointer (Sting Chameleon)
+32EF4-32EF5: Loading pointer (Armored Armadillo)
+32EF6-32EF7: Loading pointer (Flame Mammoth)
+32EF8-32EF9: Loading pointer (Storm Eagle)
+32EFA-32EFB: Loading pointer (Spark Mandrill)
+32EFC-32EFD: Loading pointer (Boomer Kuwanger)
+32EFE-32EFF: Loading pointer (Chill Penguin)
+32F00-32F01: Loading pointer (Sigma Stage 1)
+32F02-32F03: Loading pointer (Sigma Stage 2)
+32F04-32F05: Loading pointer (Sigma Stage 3)
+32F06-32F07: Loading pointer (Sigma Stage 4)
+
+33C7A: Projectile to use for X's charged buster shot.
+
+
+37C44-381FF: EMPTY
+
+400D5-401FF: EMPTY
+
+46EA0-481FF: EMPTY
+
+60D4D-651FF: EMPTY
+
+8F159-901FE: EMPTY
+
+
+LEVEL ARRANGEMENT INFORMATION
+----
+
+How level arrangement works
+____
+Starts with 4 byte header.
+
+Fills in from top to bottom, left to right.
+1st byte:
+	IF 128 BIT NOT SET:
+		Create blocks sequentially from block provided in second byte (create N-1 blocks).
+	IF 128 BIT SET:
+		Create N-1 copies of the block provided in second byte.
+2nd byte: 256x256 tile block to start on.
+
+
+901FF-90236: Sting Chameleon arrangement info.
+90237-90258: Sting Chameleon BG arrangment info.
+90259-902BC: Armored Armadillo level arrangement info.
+902BD-90308: Armored Armadillo BG arrangement info.
+90309-9032A: Flame Mammoth level arrangement info.
+9032B-9033E: Flame Mammoth BG arrangement info.
+9033F-90350: Highway stage level arrangement info.
+90351-90378: Highway stage BG arrangement info.
+90379-903AA: Launch Octopus stage level arrangement info.
+903AB-903CE: Launch Octopus BG arrangement info.
+903CF-903D6: Boss intro screen arrangement info.
+903D7-90410: Storm Eagle level arrangement info.
+90411-90418: Storm Eagle BG arrangement info.
+90419-90436: Spark Mandrill level arrangement info.
+90437-90448: Spark Mandrill BG arrangment info.
+90449-90472: Chill Penguin level arrangement info.
+90473-90492: Chill Penguin BG arrangement info.
+90493-904FC: Boomer Kuwanger level arrangement info.
+904FD-9056A: Boomer Kuwanger BG arrangement info.
+9056B-90572: Weapon Get screen arrangement info.
+90573-9057A: Weapon Get screen BG arrangement info.
+9057B-905B6: Sigma Stage 1 level arrangement info.
+905B7-905E8: Sigma Stage 1 BG arrangement info.
+905E9-9060A: Sigma Stage 2 level arrangement info.
+9060B-9062A: Sigma Stage 2 BG arrangement info.
+9062B-90644: Sigma Stage 3 level arrangement info.
+90645-90658: Sigma Stage 3 BG arrangement info.
+90659-90662: Sigma Stage 4 level arrangement info.
+90663-9066A: Sigma Stage 4 BG arrangement info.
+9066B-90670: Megaman X Spec screen arrangement info.
+90671-90676: Dr. Light Warning screen arrangement info.
+
+
+90677-911FF: EMPTY
+
+
+256x256 TILE BLOCK INFORMATION
+----
+91200-9307F: Sting Chameleon tile makeup data.
+93080-936FF: Sting Chameleon BG tile makeup data.
+93700-9537F: Armored Armadillo tile makeup data.
+95380-9637F: Armored Armadillo BG tile makeup data.
+96380-9757F: Highway stage tile makeup data.
+97580-97CFF: Launch Octopus BG tile makeup data.
+97D00-97E7F: Sigma Stage 4 tile makeup data.
+97E80-97F7F: Sigma Stage 4 BG tile makeup data.
+97F80-9807F: Megaman X Spec screen BG tile makeup data.
+98080-981FF: Weapon Get screen BG tile makeup data.
+98200-98C7F: Highway stage BG tile makeup data.
+98C80-9A5FF: Flame Mammoth tile makeup data.
+9A600-9AFFF: Flame Mammoth BG tile makeup data.
+9B000-9CA7F: Launch Octopus tile makeup data.
+9CA80-9E77F: Storm Eagle tile makeup data.
+9E780-9FF7F: Spark Mandrill tile makeup data.
+9FF80-A01FF: Sigma Stage 3 BG tile makeup data.
+A0200-A0CFF: Spark Mandrill BG tile makeup data.
+A0D00-A287F: Chill Penguin tile makeup data.
+A2880-A31FF: Chill Penguin BG tile makeup data.
+A3200-A46FF: Boomer Kuwanger tile makeup data.
+A4700-A4F7F: Boomer Kuwanger BG tile makeup data.
+A4F80-A617F: Sigma Stage 1 tile makeup data.
+A6180-A68FF: Sigma Stage 1 BG tile makeup data.
+A6900-A77FF: Sigma Stage 2 tile makeup data.
+A7800-A81FF: Sigma Stage 2 BG tile makeup data.
+A8200-A8DFF: Sigma Stage 3 tile makeup data.
+A8E00-A8F7F: Weapon Get screen tile makeup data.
+A8F80-A907F: Boss intro screen tile makeup data.
+A9080-A917F: Boss intro screen BG tile makeup data.
+
+A9180-A91FF: EMPTY
+
+AB970-AC1FF: EMPTY
+
+AC900-AD9FF: EMPTY
+
+16x16 TILE PROPERTIES
+----
+Defines solidity and other properties of the 16x16 tiles.
+01: 45 degree slope (Right, bottom)
+02: 45 degree slope (Right, top)
+03: 45 degree slope (Left, bottom)
+04: 45 degree slope (Left, top)
+05: 30 degree slope (Right, bottom)
+06: 30 degree slope (Right, bottom-middle)
+07: 30 degree slope (Right, middle-top)
+08: 30 degree slope (Right, top)
+09: 30 degree slope (Left, bottom)
+0A: 30 degree slope (Left, bottom-middle)
+0B: 30 degree slope (Left, middle-top)
+0C: 30 degree slope (Left, top)
+0D: Underwater (Below water line)
+0E: Underwater (Water line)
+0F: ???
+10: ???
+11: Muddy water.
+12: Ladder.
+13: Top of ladder.
+14: ???
+15: ???
+16: ???
+17: ???
+18: ???
+19: ???
+1A: ???
+1B: ???
+1C: Muddy water (top).
+1D-32: ???
+33: Solid.
+34: Solid.
+35: Solid.
+36: Solid, can't wallslide.
+37: Solid, conveyor belt (left)
+38: Solid, conveyor belt (right)
+39: Solid, ??? (Not solid on top, X jumps off of it)
+3A: Solid, ??? (Not solid on top, X jumps off of it)
+3B: Solid.
+3C: Solid, breakable block.
+3D: Solid.
+3E: Solid.
+3F: Solid, instant death.
+
+
+ADA00-?????: Sting Chameleon 16x16 tile block properties.
+
+
+AFDC6-B01FF: EMPTY
+
+
+32x32 TILE BLOCK INFORMATION
+----
+B0200-B1727: Sting Chameleon 32x32 tile mappings.
+B1728-B18F7: Sting Chameleon 32x32 BG tile mappings.
+B18F8-B2B07: Armored Armadillo 32x32 tile mappings.
+B2B08-B31AF: Armored Armadillo 32x32 BG tile mappings.
+B31B0-B4257: Flame Mammoth 32x32 tile mappings.
+B4258-B4627: Flame Mammoth 32x32 bg tile mappings. 
+B4628-B546F: Highway stage 32x32 tile mappings.
+B5470-B55C7: Highway stage 32x32 BG tile mappings.
+B55C8-B61C7: Launch Octopus 32x32 tile mappings.
+B61C8-B6237: Boss intro 32x32 tile mappings.
+B6238-B62A7: Boss intro 32x32 BG tile mappings.
+B62A8-B647F: Weapon Get screen 32x32 tile mappings.
+B6480-B6557: Weapon Get screen 32x32 BG tile mappings.
+B6558-B6947: Sigma Stage 4 32x32 tile mappings.
+B6948-B699F: Sigma Stage 4 32x32 BG tile mappings.
+B69A0-B6A67: Megaman X Spec Screen 32x32 tile mappings.
+B6A68-B7DEF: Sigma Stage 2 32x32 tile mappings.
+B7DF0-B7EA7: Sigma Stage 2 32x32 BG tile mappings.
+B7EA8-B81B7: Dr. Light Warning 32x32 tile mappings. 
+B81B8-B81FF: EMPTY
+B8200-B860F: Launch Octopus 32x32 BG tile mappings.
+B8610-B951F: Storm Eagle 32x32 tile mappings.
+B9520-B972F: Storm Eagle 32x32 BG tile mappings.
+B9730-BA4AF: Spark Mandrill 32x32 tile mappings.
+BA4B0-BA817: Spark Mandrill 32x32 BG tile mappings.
+BA818-BB9B7: Chill Penguin 32x32 tile mappings.
+BB9B8-BBD07: Chill Penguin 32x32 BG tile mappings.
+BBD08-BCCDF: Boomer Kuwanger 32x32 tile mappings.
+BCCE0-BCFA7: Boomer Kuwanger 32x32 BG tile mappings.
+BCFA8-BE187: Sigma Stage 3 32x32 tile mappings.
+BE188-BE327: Sigma Stage 3 32x32 BG tile mappings.
+BE328-BF65F: Sigma Stage 1 32x32 tile mappings.
+BF660-BF87F: Sigma Stage 1 32x32 BG tile mappings.
+BF880-C01FF: EMPTY
+
+
+16x16 TILE BLOCK INFORMATION
+----
+
+Formatting of tiles
+___________________
+2 byte format:
+ VHLPPPTT TTTTTTTT
+
+ Byte V: Vertical flip. Toggle to flip the
+          tile vertically.
+ Byte H: Horizontal flip. Toggle to flip the
+          tile horizontally.
+ Byte L: Layer priority. Toggle to have tile
+          appear in front of objects.
+ Bytes P: Palette. Used to choose palette of
+          the tile. Ranges from 0 to 7.
+ Bytes T: Tile ID.
+
+C0200-C1CB7: Sting Chameleon 16x16 tile mappings.
+C1CB8-C37DF: Armored Armadillo 16x16 tile mappings.
+C37E0-C4EEF: Chill Penguin 16x16 tile mappings.
+C4EF0-C6597: Storm Eagle 16x16 tile mappings.
+C6598-C7EBF: Flame Mammoth 16x16 tile mappings.
+C7EC0-C8087: Boss intro 16x16 tile mappings.
+C8088-C81FF: EMPTY
+C8200-C9E3F: Highway stage 16x16 tile mappings.
+C9E40-CB4F7: Launch Octopus 16x16 tile mappings.
+CB4F8-CE617: Spark Mandrill 16x16 tile mappings.
+CE618-CE98F: Megaman X Spec screen 16x16 tile mappings.
+CE990-CF907: Sigma Stage 1 16x16 tile mappings.
+CF908-D0137: Sigma Stage 4 16x16 tile mappings.
+
+
+D0140-D01FF: EMPTY
+
+157B09-15ACDF: EMPTY
+
+167E18-1681FF: EMPTY
+
+1700C0-1701FF: EMPTY
+
+178440-1785FF: EMPTY
+
+17EB90-1801FF: EMPTY [END]
+
+SUPPLEMENTARY INFORMATION
+----
+Dialogue controls
+
+80: Line break.
+81: Waits for the player to press any of the buttons
+    assigned to an action in the game.
+82: Closes dialogue box.
+83: Indicates the next number should be used to
+    set the x position of the dialogue arrow.
+86: Indicates the next number should be used to
+    move the displayed text upwards. Text is moved
+    up by (8*X) pixels.
+87: Indicates the next number should be used to
+    pause text temporarily. Formula is
+    around (X/60) seconds.
+88: Indicates the next number should be used to
+    determine default text speed. Formula is
+    around (60/X) letters per second.
+89: Indicates that next two numbers are to be used to
+    determined the starting place of the text.
+8A: Toggles on/off cutscene mode. This determines
+    whether or not the character is in "speaking"
+    mode, and whether the character icon should
+    be displayed on screen.
+C0-FF: Dialogue color. Color is picked from the 
+    layer 3 palette. There are 8 colors to choose
+    from, one being a duplicate of the light blue
+    palette. The colors loop around: C8 is the same
+    as C0, C1 is C9, etc.
+
+
+
+
+
+
+
+
+
+
+PASSWORD SCREEN
+
+#1 - In the password given below, the order the values are
+checked are "1 2 3 6 | 6 3 1 7 | 5 8 3 5" through the CMP
+check at $80:F316 found below under "ROM Stuff".
+
+
+Quick Stage Select Password(Completed Intro Stage only)
+
+5 3 8 5
+7 1 3 6
+6 3 2 1
+
+
+{BIN} - If address has this, there are binary bits used in the value.
+
+ROM Stuff
+ _____________________________
+/Pt. 2 for Energy Tank Routine\
+$80/88CD	- DA		PHX			- Push Accumulator X onto stack. STACK 2
+$80/88CE	- 5A		PHY			- Push Accumulator Y onto stack. STACK 3
+$80/88CF	- 08		PHP			- Push Accumulator PROCESS STATUS BITS onto stack. STACK 4
+$80/88D0	- E2 10		SEP #$10		- Set Processor Status Bits to 0x10
+$80/88D2	- A0 00		LDY #$00		- Load 0x00 into Accumulator Y
+$80/88D4	- E2 31		SEP #$31		- Set Process Status Bits to 0x31
+$80/88D6	- AE A3 0B	LDX $0BA3[$86:0BA3]	- Load offset for sound? Into Accumulator X(0x0C)
+$80/88D9	- 9D 72 0B	STA $0B72,x[$86:0B7E]	- Store Accumulator A(0x0D) into offset 0x0B72 + X = 0x0B7E
+$80/88DC	- 98		TYA			- Transfer Accumulator Y into Accumulator A
+$80/88DD	- 9D 73 0B	STA $0B73,x[$86:0B7F]	- Store Accumulator A(0x00) into offset 0x0B73 + X = 0x0B7F
+$80/88E0	- E8		INX			- Increment X
+$80/88E1	- E8		INX			- Increment X
+$80/88E2	- 8A		TXA			- Transfer Accumulator X into Accumulator A
+$80/88E3	- 29 1E		AND #$1E		- Test 0x0E with 0x1E using AND, leaving 0x0E as result
+$80/88E5	- 8D A3 0B	STA $0BA3[$86:0BA3]	- Store Accumulator A(oxoE) into offset 0x0BA3
+$80/88E8	- 28		PLP			- Pull Accumulator PROCESS STATUS BITS from stack. STACK 4
+$80/88E9	- 7A		PLY			- Pull Accumulator Y from stack. STACK 3
+$80/88EA	- FA		PLX			- Pull Accumulator X from stack. STACK 2
+$80/88EB	- 6B		RTL			- Return to routine long. LONG RETURN
+
+ ______________________________________
+/STARTING POINT - Password Screen Stuff\
+$80:F316	- D5 18		: CMP $18,x[00:1E6?]	- Compares the value at 1E60+x(starts from the bottom right, to the left, on each line in that order) SEE #1
+
+ _____________________________________
+/STARTING POINT - Shooting the Hadoken\
+$81:A0EC	- A5 27 	: LDA $27[$00:0BCF]	<- Loads Megaman X's Health
+		- C9 20 	: CMP #$20		<- Is health at 0x20(32)?(check for use of Hadoken)
+		- D0 17 	: BNE $17[$A109]	<- Branch if not equal.
+		- AD 7E 1F	: LDA $1F7E		<- Check for hadoken(0x80)
+		- 29 80 	: AND #$80
+		- C9 80 	: CMP #$80		<- Does player have hadoken?
+		- D0 0E		: BNE $0E[$A109]	<- If not, leave code.
+		- A5 02 	: LDA $02[$00:0BAA]
+		- F0 0A		: BEQ $0A[$A109]
+
+ ______________________________
+/Pt. 2 for the Dashing Caapsule\
+$82:827D	- A9 02		LDA #$02
+$82:827F	- 85 01		STA $01[$00:0E69]
+$82:8281	- A9 03		LDA #$03
+$82:8281	- A9 03		LDA #$03
+$82:8283	- 85 28		STA $28[$00:0E90]
+$82:8285	- A5 0A		LDA $0A[$00:0E72]
+$82:8287	- 3A		DEC A
+$82:8288	- 0A		ASL A
+$82:8289	- AA		TAX
+$82:828A	- BD E4 A5	LDA $A5E4,x[$86:A67C]
+$82:828D	- 85 16		STA $16[$00:0E7E]
+$82:828F	- BD E5 A5	LDA $A5E5,x[$86:A67D]
+$82:8292	- AA		TAX
+$82:8293	- BF 00 82 7F	LDA $7F8200,x[$7F:8225]
+$82:8297	- 85 18		STA $18[$00:0E80]
+$82:8299	- BF 00 83 7F	LDA $7F8300,x[$7F:8325]
+$82:829D	- 85 11		STA $11[$00:0E79]
+$82:829F	- 64 30		STZ $30[$00:0E98]
+$82:82A1	- C2 20		REP #$20
+$82:82A3	- 64 1A		STZ $1A[$00:0E82]
+$82:82A5	- 64 1C		STZ $1C[$00:0E84]
+$82:82A7	- 64 1E		STZ $1E[$00:0E86]
+$82:82A9	- E2 20		SEP #$20
+$82:82AB	- 6B		RTL
+
+ ____________________________________
+/STARTING POINT - Energy Tank Routine\
+$82/E4EE	- BD 83 1F	: LDA $1F83,x[$86:1F83]	- Load E-tank #1
+$82/E4F1	- 10 2A		: BPL $2A[$E51D]	- Branch if E-tank not collected yet
+$82/E4F3	- C9 8E		: CMP #$8E		- Is E-tank full?
+$82/E4F5	- B0 26		: BCS $26[$E51D]	- If so, branch.
+$82/E4F7	- 48		: PHA			- No branch if E-tank not full. Push A onto stack. STACK 1
+$82/E4F8	- A9 0D		: LDA #$0D		- Load 0x0D into Accumulator A
+$82/E4FA	- 22 CD 88 80	: JSL $8088CD[$80:88CD]	- Jump to routine ***LONG JUMP***
+$82/E4FE	- 68		: PLA			- Pull Accumulator A from stack. STACK 1
+$82/E4FF	- 1A		: INC A			- Increment A
+$82/E500	- 9D 83 1F	: STA $1F83,x[$86:1F84]	- Store accumulator A(0x81) to offset 0x1F83 + X
+$82/E503	- C9 8E		: CMP #$8E		- Is E-Tank full?
+$82/E505	- F0 20		: BEQ $20[$E527]	- If so, branch
+$82/E507	- AC 00 00	: LDY $0000[$86:0000]	- Load ??? into Accumulator Y
+$82/E50A	- D0 16		: BNE $16[$E522]	- Does is equal the value at offset 0x0000? If not, branch
+$82/E51D	- E8		: INX			- Increment X(starting at 0)
+$82/E51E	- E0 04		: CPX #$04		- Is X at 0x04?
+$82/E520	- D0 CC		: BNE $CC[$E4EE]	- If it's not 0x04, then branch, otherwise, leave routine
+$82/E522	- A9 04		: LDA #$04		- Load 0x04 into accumulator A
+$82/E524	- 85 01		: STA $01[$00:1629]	- Store Accumulator A into offset 0x1629
+$82/E526	- 60		: RTS			- Return to routine short SHORT RETRUN
+
+ ___________________________________________________
+/STARTING POINT - Dr. Light Capsule Routine(Dashing)\
+$87:CAB9	- BC 62 D3	: LDY $D362,x[$86:D36A]	<- Loads 8 into Y accumulator
+$87:CABC	- B9 D5 D3	: LDA $D3D5,y[$86:D3D8] <- Loads 8 into A accumulator
+$87:CABF	- 2D 99 1F	: AND $1F99[$86:1F99]	<- Tests bits against 8, or 1000(Does MMX have boots?)
+$87:CAC2	- F0 04		: BEQ $04[$CAC8]	<- If he doesn't, branch, create Dr. Light Capsule
+$87:CAC8	- 22 7D 82 82	: JSL $82827D[$82:827D]	<- Long jump to capsule creating routine
+
+
+
+
+
+
+
+
+
+
+RAM Map
+-------
+
+
+
+
+$7E:0000 - Scratch RAM (16 bytes)	
+$7E:003B - Intro sequence timer for the title screen. 
+Counts down from #$FF at the title screen. When it reaches 0, there is a fade out and the intro sequence starts again. 
+The counter is reset to #$EA when a new option is selected.
+
+$7E:003C - The currently selected option on the title screen:
+#$00 = Start Game
+#$01 = Password Screen
+#$02 = Options Menu
+
+$7E:00A7 - Controller data 1, current frame. Format: axlr----
+a = A; x = X; l = L; r = R, - = unused.
+$7E:00A8 - Controller data 2, current frame. Format: byetUDLR
+b = B; y = Y; e = Select; t = Start; U = Up; D = Down; L = Left; R = Right.
+$7E:00A9 - Controller data 1, previous frame. Format: axlr----
+a = A; x = X; l = L; r = R.
+$7E:00AA - Controller data 2, previous frame. Format: byetUDLR
+b = B; y = Y; e = Select; t = Start; U = Up; D = Down; L = Left; R = Right.
+$7E:00AB - Controller data 1, button press (current frame and not previous frame). Format: axlr----
+a = A; x = X; l = L; r = R.
+$7E:00AC - Controller data 2, button press (current frame and not previous frame). Format: byetUDLR
+b = B; y = Y; e = Select; t = Start; U = Up; D = Down; L = Left; R = Right.
+
+$7E:00B3 - Used as a counter for the screen's level of brightness when fading (bits 0 to 7): 
+#$0F = full brightness, 
+#$00 = completely faded.
+
+$7E:00B4 - Camera X-position, in pixels.
+$7E:00B6 - Camera Y-position, in pixels.
+$7E:0100 - Unknown... Sound effects?
+$7E:0300   Graphics? 512 bytes(?)	
+
+7E:0500 - 7E:052F?   Table of 5-byte entries for DMA transfer of X's graphics from ROM to VRAM.
+
+
+$7E:0740 - Unknown... Sound effects?
+$7E:0B9B - Frame counter. Differs from the other two in that this one pauses during loading screens.
+$7E:0B9C - "Effective" frame counter. Stops when the player dies, among other things.
+$7E:0B9D - If the value in it is not zero, run the actual game; otherwise, loop forever. It's set to a non-zero value during NMI, and it's set to zero after the game mode has been run, so that the game runs exactly once a frame - one NMI trigger per frame.
+$7E:0B9E - "True" frame counter. Always increments once per frame.
+$7E:0BA6 - Value of Pseudo-Random Number Generator
+
+
+
+7E:0BAA              X's current state (6 = rising, 8 = falling, 14 = dashing, etc...)
+7E:0BAA              X's current sub-state
+
+$7E:0BAC (1 byte)  - X's sub-pixel X-position 
+$7E:0BAD (2 bytes) - X's X-position, in pixels 
+$7E:0BAF (1 byte)  - X's sub-pixel Y-position 
+$7E:0BB0 (2 bytes) - X's Y-position, in pixels 
+
+$7E:0BBB (1 byte)  - X's blink (close and open eyes) animation timer. 
+If X is standing still, begin the following cycle:
+- Start with #$50, decrease by one every frame until it reaches 0;
+- Make X blink once (#$08-frame-long blink);
+- Set to #$30, decrease by one every frame until it reaches 0;
+- Make X blink twice (#$04-frame-long blinks);
+If X is moving, reset the cycle.
+
+$7E:0BBF (1 byte)  - X's sprite (bits 0-7).
+$7E:0BC2 (2 bytes) - X's X-velocity, in sub-pixels per frame.
+$7E:0BC4 (2 bytes) - X's Y-velocity, in negative sub-pixels per frame.
+$7E:0BC6 (1 byte)  - X's Y-acceleration, in sub-pixels per frame per frame.
+$7E:0BCF (1 byte)  - X's current health. CHECKED FOR HADOKEN|CHECKED FOR HADOKEN USE
+
+
+$7E:0BDB	1 byte	Current weapon selected.
+
+Value 	Selected weapon
+00 	X Buster
+02 	Homing Torpedo
+04 	Chameleon Sting
+06 	Rolling Shield
+08 	Fire Wave
+0A 	Storm Tornado
+0C 	Electric Spark
+0E 	Boomerang Cutter
+10 	Shotgun Ice
+12 	Storm Tornado (again?)
+14 	Charged Homing Torpedo
+16 	Charged Chameleon Sting
+18 	Charged Rolling Shield
+1A 	Charged Fire Wave
+1C 	Charged Storm Tornado
+1E 	Charged Electric Spark
+20 	Charged Boomerang Cutter
+22 	Charged Shotgun Ice
+24 	Storm Tornado (again??)
+
+
+
+
+$7E:0BDD	1 byte	Number of bullets (of any shot type) onscreen.
+$7E:0BDE	6 bytes	Controller data. Disabled buttons (such as default X and select) are not included.
+
+7E:0BE0 - 7E:0BE2    Mirror of controller input (bits for unused buttons seem to be ANDed out)
+
+$7E:0BF8	1 byte	Timer for how long to display X's buster after shooting. Set to #$FF when X's buster isn't out, set to #$0F and decreases once per frame after shooting. Is reset to #$0F with each successive shot.
+$7E:0BFA	1 byte	Dashing timer. Decreases by one every frame. Once it hits 0, X stops dashing. Freezes at the last value it was at if X stop dashing before it reaches 0.
+$7E:0BFF	1 byte	Timer for the level of X's charge shot, while charging. Starts at #$95 and decreases once per frame. #$95 = green shot charged, #$4F = blue shot charged, #$01 = pink shot charged.
+$7E:0C03	1 byte	Level of X's charged shot, while charging. #$00 = not charging, #$01 = pink shot charged, #$02 = blue shot charged, #$03 = green shot charged.
+$7E:0C06	1 byte	Bitflags: Standing = #$04, hanging on left wall = #$02, right wall = #$01.
+$7E:0C11	1 byte	X's direction. #$00 = left, #$40 = right.
+$7E:0C13	1 byte	X's recovery (flashing) time after a hit. Decreases by one every frame.
+$7E:0C30	96 bytes	Stuff for armor parts (position, type, and so forth). TODO
+$7E:0E18	1 byte	Ride armor exist flag (#$00 = ride armor does not exist, #$01 = ride armor exists).
+$7E:0E1A	1 byte	Ride armor's current state. (#$00 = empty, #$02 = still, #$04 = walking, #$06 = punching, #$08 = jumping, #$0E = dashing, #$14 = mount ride armor, #$16 = dismount ride armor)
+$7E:0E1C	1 byte	Ride armor's sub-pixel X-position.
+$7E:0E1D	2 bytes	Ride armor's X-position, in pixels.
+$7E:0E1F	1 byte	Ride armor's sub-pixel Y-position.
+$7E:0E20	2 bytes	Ride armor's Y-position, in pixels.
+$7E:0E32	2 bytes	Ride armor's X-velocity, in sub-pixels per frame.
+$7E:0E34	2 bytes	Ride armor's Y-velocity, in negative sub-pixels per frame.
+$7E:0E36	1 byte	Ride armor's Y-acceleration, in sub-pixels per frame per frame
+$7E:0E4B	1 byte	Ride armor's heading (#$00 = facing left, #$40 = facing right).
+$7E:0E4E	6 bytes	Controller data, if ride armor is nearby. Disabled buttons (such as default X and select) are not included. Data for previous frame not included.
+$7E:0E68	64*15 bytes	Enemy data. Each enemy is given 64 bytes.
+
+
+$7E:0E77 - Boss attack indicator...?
+$7E:0E8F - Boss Health only...? Or health for all enemies on-screen...?
+
+$7E:1228	64*8 bytes	X's shot/bullet data. Each shot is given 64 bytes.
+$7E:1428	64*8 bytes	Enemy shot/bullet data. Each shot is given 64 bytes.
+$7E:1628	48*16 bytes	Misc. data (such as item drops). Each item is given 48 bytes.
+$7E:1928	Unknown	Unknown data (possibly including shot impact and explosion sprites). Each part is given 32 bytes.
+
+
+
+$7E:1E4B - Currently Activated icon(STAGE - 00, MAP - 02, SPEC - 04)
+$7E:1E4C - Stage Select Cursor Position X
+$7E:1E4F - Stage Select Cursor Position Y
+$7E:1E56 - Stage Bit. Is stage select 'monitor' showing stage?
+
+$7E:1E65 - Currently selected stage
+Bitflags:
+01	- Launch Octopus
+02	- Sting Chameleon
+03	- Armored Armadillo
+04	- Flame Mammoth
+05	- Storm Eagle
+06	- Spark Mandrill
+07	- Boomer Kuwanger
+08	- Chill Penguin
+09	- Sigma's Fortress(1?)
+
+$7E:1ED2	1 byte	Current item selected on the pause menu.
+#$00 = X Buster
+#$01 = Homing Torpedo
+#$02 = Chameleon Sting
+#$03 = Rolling Shield
+#$04 = Fire Wave
+#$05 = Storm Tornado
+#$06 = Electric Spark
+#$07 = Boomerang Cutter
+#$08 = Shotgun Ice
+#$09 = Escape Unit
+#$0A = Sub Tank 1
+#$0B = Sub Tank 2
+#$0C = Sub Tank 3
+#$0D = Sub Tank 4
+$7E:1F7A	1 byte	Current level ID.
+#$00 = Highway/intro stage
+#$01 = Launch Octopus
+#$02 = Sting Chameleon
+#$03 = Armored Armadillo
+#$04 = Flame Mammoth
+#$05 = Storm Eagle
+#$06 = Spark Mandrill
+#$07 = Boomer Kuwanger
+#$08 = Chill Penguin
+#$09 = Sigma Stage 1
+#$0A = Sigma Stage 2
+#$0B = Sigma Stage 3
+#$0C = Sigma Stage 4
+
+$7E:1F7E - Screen Check Counter(for Hadoken){BIN}
+XY	X = 8 if Hadoken is acquired.
+	Y = 1-5 is the amount of times passing the location to get the Hadoken.
+
+$7E:1F80 - Life counter. Capped at #$09.
+$7E:1F83 - E-Tank 01(must be active first){BIN}
+$7E:1F84 - E-Tank 02(must have E-Tank 01 on){BIN}
+$7E:1F85 - E-Tank 03(must have E-Tank 02 on){BIN}
+$7E:1F86 - E-Tank 04(must have E-Tank 03 on){BIN}
+
+$7E:1F87 - Weapon Energy (16 bytes)
+Each weapon's energy is stored as two bytes. 
+First byte: Sub-unit amount. 
+Second byte (bits 0 to 5): Unit amount.
+Once unit amount is 0, sub-unit amount cannot be used even if it is not 0.
+Usage: Homing Torpedo and Chameleon Sting: 1/2 unit; 
+Fire Wave: 1/16 unit; Everything else: 1 unit.
+
+$7E:1F88	- Homing Torpedo{BIN} CHECKED FOR HADOKEN
+$7E:1F8A	- Chameleon Sting{BIN} CHECKED FOR HADOKEN
+$7E:1F8C	- Rolling Shield{BIN} CHECKED FOR HADOKEN
+$7E:1F8E	- Fire Wave{BIN} CHECKED FOR HADOKEN
+$7E:1F90	- Storm Tornado{BIN} CHECKED FOR HADOKEN
+$7E:1F92	- Electric Spark{BIN} CHECKED FOR HADOKEN
+$7E:1F94	- Boomerang Cutter{BIN} CHECKED FOR HADOKEN
+$7E:1F96	- Shotgun Ice{BIN} CHECKED FOR HADOKEN
+$7E:1F98	- Escape Unit{BIN}
+
+$7E:1F99	- Bitflags for upgrades and sub-tanks collected. Format: dcbaZYXW
+Upgrades: W = Head; X = Arm (Buster); Y = Body (Armor); Z = Leg (Dash).
+Sub-tanks: a = Eagle; b = Armadillo; c = Mandrill; d = Mammoth.
+
+Current Power-up and E-Tanks Grabbed{BIN} CHECKED FOR HADOKEN
+~XY~
+X	= E-Tanks
+1	- Storm Eagle
+2	- Armored Armadillo
+4	- Spark Mandrill
+8	- Flame Mammoth
+
+Y	= Power-Ups
+1	- Helmet Chip
+2	- Buster Chip
+4	- Armor Chip
+8	- Dash Chip
+
+$7E:1F9A (1 byte) - X's maximum health. Increases by 2 per heart tank.
+
+$7E:1F9C	- Heart Container Grabbed{BIN} CHECKED FOR HADOKEN
+Bitflags for heart tanks collected. Format: hgfedcba
+a = Penguin; b = Armadillo; c = Eagle; d = Chameleon; e = Mammoth; f = Kuwanger; g = Mandrill; h = Octopus.
+~XY~
+X
+1	- Flame Mammoth
+2	- Boomer Kuwanger
+4	- Spark Mandrill
+8	- Launch Octopus
+
+Y
+1	- Chill Penguin
+2	- Armored Armadillo
+4	- Storm Eagle
+8	- Sting Chameleon
+
+7E:1FB4              Current number of lives remaining
+
+
+
+
+
+Enemy/Object data
+
+Offset	Byte length	Description
+#$0	1 byte	Object in memory flag. #$00 = No object in memory. #$01 = Object exists in memory.
+#$1	1 byte	Object's action 1.
+#$2	1 byte	Object's action 2.
+#$4	1 byte	Object's sub-pixel X-position.
+#$5	2 bytes	Object's X-position, in pixels.
+#$7	1 byte	Object's sub-pixel Y-position.
+#$8	2 bytes	Object's Y-position, in pixels.
+#$A	1 byte	Object ID.
+#$13	1 byte	Animation countdown (animates and reset when zero).
+#$17	1 byte	Object sprite (bits 0-7).
+#$1A	2 bytes	Object X-velocity, in sub-pixels per frame.
+#$1C	2 bytes	Object Y-velocity, in negative sub-pixels per frame.
+#$1E	1 byte	Object Y-acceleration, in sub-pixels per frame per frame.
+#$22	2 bytes	Object X-position, in pixels.
+#$24	2 bytes	Object Y-position, in pixels.
+#$27	1 byte	Object's current health.
+#$28	24 bytes	Unknown. Contains further data about the object, such as recovery timers for bosses. Data may not be fixed.
+
+
+
+
+credits:
+
+FractalFusion, Kayvon, DarkMoon, GoldS, Mellonpizza, Chagmen_Lietons
