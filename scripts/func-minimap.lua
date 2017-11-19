@@ -3,7 +3,7 @@
 
 --Minimap and screen parameters
 MinimapOriginX = 25 --Minimap origin X position
-MinimapOriginY = 10 --Minimap origin Y position
+MinimapOriginY = 30 --Minimap origin Y position
 MinimapUnitSize = 5 --Size in pixels of the minimap square units (must be an odd number)
 ScreenDimX = 256 --Screen X dimension in pixels
 ScreenDimY = 224 --Screen Y dimension in pixels
@@ -60,9 +60,7 @@ function drawObjects(object, color, screenX, screenY, MinimapOriginX, MinimapOri
 	local posY = math.floor((object.y - screenY) / 16)
 
 	if posX >= 0 and posX <= 15 and posY >= 0 and posY <= 13 then
-		if inputMatrixValue ~= -1 then
-			inputMatrix[posY + 1][posX + 1] = inputMatrixValue
-		end
+		inputMatrix[posY + 1][posX + 1] = inputMatrixValue
 
 		gui.drawBox(
 			MinimapOriginX + MinimapUnitSize * posX + 1,

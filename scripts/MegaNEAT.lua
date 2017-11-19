@@ -21,7 +21,7 @@ Outputs = #ButtonNames
 SavestateSlot = 1
 BoxRadius = 7 --TODO: Delete every reference to BoxRadius, because it is unnecessary
 
---Loading functions from files
+--Loading scripts with functions
 dofile("func-auxiliary.lua")
 dofile("func-minimap.lua")
 dofile("func-network.lua")

@@ -142,18 +142,24 @@ function evaluateNetwork(network, inputs)
 		return {}
 	end
 
+	--Converts the input from a matrix format to an array
 	array = {}
 	index = 1
 	for _, Value in pairs(inputs) do
-		if type(Value) ~= 'table' then break end
+		if type(Value) ~= 'table' then
+			break
+		end
 
 		for i=1,#Value do
 			array[index] = Value[i]
-			index=index+1
+			index = index + 1
 		end
 	end
 
+	--Inserts the intercept neuron
 	table.insert(inputs, 1)
+
+	--Checks if the number of elements in the array is equal to the number of inputs
 	if #array ~= Inputs then
 		console.writeline("Incorrect number of neural network inputs.")
 		return {}
@@ -650,7 +656,7 @@ function clearJoypad()
 	joypad.set(controller)
 end
 
-function initializeRun()
+function initializeRun(inputs)
 	savestate.loadslot(SavestateSlot);
 	rightmost = 0
 	pool.currentFrame = 0
@@ -703,9 +709,11 @@ end
 
 function displayGenome(genome)
 	local network = genome.network
-	local cells = {}
 	local i = 1
 	local cell = {}
+	local cells = {}
+	local biasCell = {}
+
 	for dy=-BoxRadius,BoxRadius do
 		for dx=-BoxRadius,BoxRadius do
 			cell = {}
@@ -716,7 +724,7 @@ function displayGenome(genome)
 			i = i + 1
 		end
 	end
-	local biasCell = {}
+
 	biasCell.x = 80
 	biasCell.y = 110
 	biasCell.value = network.neurons[Inputs].value
@@ -817,7 +825,7 @@ function displayGenome(genome)
 		end
 	end
 
-	gui.drawBox(49,71,51,78,0x00000000,0x80FF0000)
+	gui.drawBox(49, 71, 51, 78, 0x00000000, 0x80FF0000)
 
 	if forms.ischecked(showMutationRates) then
 		local pos = 100
