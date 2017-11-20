@@ -928,7 +928,7 @@ function displayGenome(genome)
 			cells[n] = cell
 		end
 	end
-	
+
 	for n=1,4 do
 		for _,gene in pairs(genome.genes) do
 			if gene.enabled then

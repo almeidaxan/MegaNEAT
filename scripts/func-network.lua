@@ -1,5 +1,5 @@
----[func-network.lua]
---Contains functions related to the neural network and genetic evolution (NEAT) algorithm
+--- [func-network.lua]
+-- Contains functions related to the neural network and genetic evolution (NEAT) algorithm
 
 function newInnovation()
 	pool.innovation = pool.innovation + 1
@@ -137,15 +137,16 @@ function generateNetwork(genome)
 	genome.network = network
 end
 
+-- 
 function evaluateNetwork(network, inputs)
 	if #inputs == 0 then
 		return {}
 	end
 
-	--Converts the input from a matrix format to an array
+	-- Converts the matrix with inputs to an array
 	array = {}
 	index = 1
-	for _, Value in pairs(inputs) do
+	for _,Value in pairs(inputs) do
 		if type(Value) ~= 'table' then
 			break
 		end
@@ -156,10 +157,10 @@ function evaluateNetwork(network, inputs)
 		end
 	end
 
-	--Inserts the intercept neuron
-	table.insert(inputs, 1)
+	-- Inserts the bias neuron into the array
+	table.insert(array, 1)
 
-	--Checks if the number of elements in the array is equal to the number of inputs
+	-- Checks if the number of elements in the array is equal to the number of inputs
 	if #array ~= Inputs then
 		console.writeline("Incorrect number of neural network inputs.")
 		return {}
@@ -293,7 +294,7 @@ function linkMutate(genome, forceBias)
 
 	local newLink = newGene()
 	if neuron1 <= Inputs and neuron2 <= Inputs then
-		--Both input nodes
+		-- Both input nodes
 		return
 	end
 	if neuron2 <= Inputs then
@@ -637,7 +638,7 @@ function newGeneration()
 	writeFile("backup." .. pool.generation .. "." .. forms.gettext(saveLoadFile))
 end
 
-function initializePool()
+function initializePool(inputs)
 	pool = newPool()
 
 	for i=1,Population do
@@ -645,14 +646,16 @@ function initializePool()
 		addToSpecies(basic)
 	end
 
-	initializeRun()
+	initializeRun(inputs)
 end
 
 function clearJoypad()
 	controller = {}
+
 	for b = 1,Outputs do
 		controller["P1 " .. ButtonNames[b]] = false
 	end
+
 	joypad.set(controller)
 end
 
@@ -709,42 +712,62 @@ end
 
 function displayGenome(genome)
 	local network = genome.network
-	local i = 1
 	local cell = {}
 	local cells = {}
 	local biasCell = {}
 
-	for dy=-BoxRadius,BoxRadius do
-		for dx=-BoxRadius,BoxRadius do
+	-- Inputs
+	local k = 1
+	for i=0,13 do
+		for j=0,15 do
 			cell = {}
-			cell.x = 50+5*dx
-			cell.y = 70+5*dy
-			cell.value = network.neurons[i].value
-			cells[i] = cell
-			i = i + 1
+			cell.x = MinimapOriginX + MinimapUnitSize * j
+			cell.y = MinimapOriginY + MinimapUnitSize * i
+			cell.value = network.neurons[k].value
+			cells[k] = cell
+			k = k + 1
 		end
 	end
 
-	biasCell.x = 80
-	biasCell.y = 110
+	-- Bias
+	biasCell.x = MinimapOriginX + MinimapUnitSize * 15
+	biasCell.y = MinimapOriginY + MinimapUnitSize * 15
 	biasCell.value = network.neurons[Inputs].value
 	cells[Inputs] = biasCell
 
+	-- Outputs and its names
 	for o = 1,Outputs do
 		cell = {}
-		cell.x = 220
-		cell.y = 30 + 8 * o
+		cell.x = MinimapOriginX + MinimapUnitSize * 37
+		cell.y = MinimapOriginY + 10 * o - 7
 		cell.value = network.neurons[MaxNodes + o].value
-		cells[MaxNodes+o] = cell
+		cells[MaxNodes + o] = cell
 		local color
 		if cell.value > 0 then
-			color = 0xFF0000FF
+			color = 0xFFFFFFFF
 		else
-			color = 0xFF000000
+			color = 0xB0000000
 		end
-		gui.drawText(223, 24+8*o, ButtonNames[o], color, 9)
+		gui.drawText(
+			MinimapOriginX + MinimapUnitSize * 37 + 7,
+			MinimapOriginY + 10 * o - 12,
+			ButtonNames[o],
+			color,
+			9
+		)
 	end
 
+	-- Draws the minimap itself
+	gui.drawBox(
+		MinimapOriginX,
+		MinimapOriginY,
+		MinimapOriginX + MinimapUnitSize * 16 + 1,
+		MinimapOriginY + MinimapUnitSize * 14 + 1,
+		0x80000000,
+		0x80808080
+	)
+
+	-- Networks neurons
 	for n,neuron in pairs(network.neurons) do
 		cell = {}
 		if n > Inputs and n <= MaxNodes then
@@ -755,6 +778,7 @@ function displayGenome(genome)
 		end
 	end
 
+	-- Correctly positioning network neurons
 	for n=1,4 do
 		for _,gene in pairs(genome.genes) do
 			if gene.enabled then
@@ -792,20 +816,30 @@ function displayGenome(genome)
 		end
 	end
 
-	gui.drawBox(50-BoxRadius*5-3,70-BoxRadius*5-3,50+BoxRadius*5+2,70+BoxRadius*5+2,0xFF000000, 0x80808080)
+	-- Draws the minimap cells
 	for n,cell in pairs(cells) do
-		if n > Inputs or cell.value ~= 0 then
-			local color = math.floor((cell.value+1)/2*256)
-			if color > 255 then color = 255 end
-			if color < 0 then color = 0 end
-			local opacity = 0xFF000000
-			if cell.value == 0 then
-				opacity = 0x50000000
-			end
-			color = opacity + color*0x10000 + color*0x100 + color
-			gui.drawBox(cell.x-2,cell.y-2,cell.x+2,cell.y+2,opacity,color)
+		if n < Inputs and cell.value > 0 then
+			gui.drawBox(
+				cell.x,
+				cell.y,
+				cell.x + MinimapUnitSize + 1,
+				cell.y + MinimapUnitSize + 1,
+				0x00000000,
+				getColor(cell.value)
+			)
+		elseif n >= Inputs then
+			gui.drawBox(
+				cell.x,
+				cell.y,
+				cell.x + MinimapUnitSize + 1,
+				cell.y + MinimapUnitSize + 1,
+				0x80000000,
+				getColor(cell.value)
+			)
 		end
 	end
+
+	-- Draw the network connections (lines)
 	for _,gene in pairs(genome.genes) do
 		if gene.enabled then
 			local c1 = cells[gene.into]
@@ -821,11 +855,16 @@ function displayGenome(genome)
 			else
 				color = opacity + 0x800000 + 0x100 * color
 			end
-			gui.drawLine(c1.x+1, c1.y, c2.x-3, c2.y, color)
+
+			gui.drawLine(
+				c1.x + 3,
+				c1.y + 3,
+				c2.x + 3,
+				c2.y + 3,
+				color
+			)
 		end
 	end
-
-	gui.drawBox(49, 71, 51, 78, 0x00000000, 0x80FF0000)
 
 	if forms.ischecked(showMutationRates) then
 		local pos = 100
@@ -949,6 +988,10 @@ function playTop()
 	return
 end
 
-function computeFitness(rightmost, megamanHP, currentFrame) --HP goes from 0 to 16
-	return rightmost + 25 * megamanHP - currentFrame / 2
+-- function computeFitness(x, hp, frame) -- HP goes from 0 to 16
+-- 	return x + 25 * hp
+-- end
+
+function computeFitness(x, y, hp, enemHP) -- HP goes from 0 to 16
+	return -0.5 * y + 1 * x + 25 * hp + 50 * enemHP
 end
