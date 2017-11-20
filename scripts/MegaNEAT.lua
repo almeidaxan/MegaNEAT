@@ -103,10 +103,16 @@ while true do
 	-- gui.drawText(20, 170, "Atual: " .. enemiesTotalHP)
 	-- gui.drawText(20, 190, "Diff: " .. enemiesCumDiffHP)
 
+	-- local enemiesCumDiffHP
 	-- if enemiesCumDiffHP == nil then
 	-- 	enemiesCumDiffHP = 0
+	--  countEnemies = #enemies
 	-- else
-	-- 	enemiesCumDiffHP = enemiesCumDiffHP + enemiesTotalHP - enemiesTotalHPBefore
+	-- 		if countEnemies == #enemies then
+	-- 			enemiesCumDiffHP = enemiesCumDiffHP + enemiesTotalHP - enemiesTotalHPBefore 
+	--		else
+	--			countEnemies = #enemies
+	--		end
 	-- end
 
 	-- enemiesTotalHPBefore = enemiesTotalHP
