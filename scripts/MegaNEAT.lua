@@ -83,8 +83,8 @@ while true do
 	megamanY = memory.read_s16_le(0x0BB0) + 10
 	megamanHP = memory.read_s8(0x0BCF)
 
-	if megamanX > rightmost then
-		rightmost = megamanX
+	if megamanX > Rightmost then
+		Rightmost = megamanX
 		timeout = TimeoutConstant
 	end
 
@@ -92,36 +92,35 @@ while true do
 
 	local timeoutBonus = pool.currentFrame / 4
 
-	-- -- Get total of enemies HP
-	-- enemiesTotalHP = 0
-	-- local enemies = getEnemies()
-	-- for i=1,#enemies do
-	-- 	enemiesTotalHP = enemiesTotalHP + enemies[i].hp
-	-- end
+	-- Define a score based on shots that hit enemies
+	local bulletsx = getBulletsX()
+	local etc = getEtc()
 
-	-- gui.drawText(20, 150, "Antes: " .. enemiesTotalHPBefore)
-	-- gui.drawText(20, 170, "Atual: " .. enemiesTotalHP)
-	-- gui.drawText(20, 190, "Diff: " .. enemiesCumDiffHP)
+	if Score == nil then
+		Score = 0
+	else 
+		for i=1,#bulletsx do
+			if bulletsx[i].action1 == 8 and bulletsx[i].action2 == 4 and bulletsx[i].action3 == 0 then
+				if bulletsx[i].id == 1 then
+					Score = Score + 2
+				else
+					Score = Score + 4
+				end
+			end
+		end
 
-	-- local enemiesCumDiffHP
-	-- if enemiesCumDiffHP == nil then
-	-- 	enemiesCumDiffHP = 0
-	--  countEnemies = #enemies
-	-- else
-	-- 		if countEnemies == #enemies then
-	-- 			enemiesCumDiffHP = enemiesCumDiffHP + enemiesTotalHP - enemiesTotalHPBefore 
-	--		else
-	--			countEnemies = #enemies
-	--		end
-	-- end
+		for i=1,#etc do
+			if etc[i].action1 == 0 and etc[i].id == 9 then
+				Score = Score + 1
+			end
+		end
+	end
 
-	-- enemiesTotalHPBefore = enemiesTotalHP
+	-- Kills
+	if timeout + timeoutBonus <= 0 or megamanHP == 0 then
+        local fitness = computeFitness(megamanX, megamanY, megamanHP)
 
-	if timeout + timeoutBonus <= 0 then
-		-- local fitness = computeFitness(megamanX, megamanHP, pool.currentFrame)
-        local fitness = computeFitness(megamanX, megamanY, megamanHP, 0)
-
-		if fitness == 0 then
+		if fitness <= 0 then
 			fitness = -1
 		end
 
@@ -161,7 +160,7 @@ while true do
 	if not forms.ischecked(hideBanner) then
 		gui.drawBox(0, 0, 300, 26, 0xD0FFFFFF, 0xD0FFFFFF)
 		gui.drawText(0, 0, "Gen " .. pool.generation .. " species " .. pool.currentSpecies .. " genome " .. pool.currentGenome .. " (" .. math.floor(measured/total*100) .. "%)", 0xFF000000, 11)
-		gui.drawText(0, 12, "Fitness: " .. math.floor(computeFitness(megamanX, megamanY, megamanHP, 0)), 0xFF000000, 11)
+		gui.drawText(0, 12, "Fitness: " .. math.floor(computeFitness(megamanX, megamanY, megamanHP)), 0xFF000000, 11)
 		gui.drawText(100, 12, "Max Fitness: " .. math.floor(pool.maxFitness), 0xFF000000, 11)
 	end
 

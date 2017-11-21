@@ -660,8 +660,9 @@ function clearJoypad()
 end
 
 function initializeRun(inputs)
-	savestate.loadslot(SavestateSlot);
-	rightmost = 0
+	savestate.loadslot(SavestateSlot)
+	Score = 0
+	Rightmost = 0
 	pool.currentFrame = 0
 	timeout = TimeoutConstant
 	clearJoypad()
@@ -992,6 +993,6 @@ end
 -- 	return x + 25 * hp
 -- end
 
-function computeFitness(x, y, hp, enemHP) -- HP goes from 0 to 16
-	return -0.5 * y + 1 * x + 25 * hp + 50 * enemHP
+function computeFitness(x, y, hp) -- HP goes from 0 to 16
+	return -0.5 * y + 1 * x + 80 * Score + 50 * hp
 end

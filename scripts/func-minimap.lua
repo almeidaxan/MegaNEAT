@@ -62,9 +62,30 @@ function getBullets()
 		-- Status is used to determine if the object is currently rendered
 		local status = memory.readbyte(0x1428 + slot * 64)
 		if status ~= 0 then
-			local bulletsX = memory.read_s16_le(0x1428 + slot * 64 + 5)
-			local bulletsY = memory.read_s16_le(0x1428 + slot * 64 + 8)
-			bullets[#bullets+1] = {["x"] = bulletsX, ["y"] = bulletsY}
+			bullets[#bullets+1] = {
+				["x"] = memory.read_s16_le(0x1428 + slot * 64 + 5),
+				["y"] = memory.read_s16_le(0x1428 + slot * 64 + 8)
+			}
+		end
+	end
+
+	return bullets
+end
+
+-- Function to retrieve the top-left X,Y positions of all rendered enemies' bullets sprites
+function getBulletsX()
+	local bullets = {}
+
+	for slot=0,7 do
+		-- Status is used to determine if the object is currently rendered
+		local status = memory.readbyte(0x1228 + slot * 64)
+		if status ~= 0 then
+			bullets[#bullets+1] = {
+				["action1"] = memory.readbyte(0x1228 + slot * 64 + 1),
+				["action2"] = memory.readbyte(0x1228 + slot * 64 + 2),
+				["action3"] = memory.readbyte(0x1228 + slot * 64 + 3),
+				["id"] = memory.readbyte(0x1228 + slot * 64 + 10)
+			}
 		end
 	end
 
@@ -79,14 +100,33 @@ function getEnemies()
 		-- Status is used to determine if the object is currently rendered
 		local status = memory.readbyte(0x0E68 + slot * 64)
 		if status ~= 0 then
-			local enemiesX = memory.read_s16_le(0x0E68 + slot * 64 + 5)
-			local enemiesY = memory.read_s16_le(0x0E68 + slot * 64 + 8)
-			local enemiesHP = memory.readbyte(0x0E68 + slot * 64 + 39)
-			enemies[#enemies+1] = {["x"] = enemiesX, ["y"] = enemiesY, ["hp"] = enemiesHP}
+			enemies[#enemies+1] = {
+				["x"] = memory.read_s16_le(0x0E68 + slot * 64 + 5),
+				["y"] = memory.read_s16_le(0x0E68 + slot * 64 + 8),
+				["hp"] = memory.readbyte(0x0E68 + slot * 64 + 39)
+			}
 		end
 	end
 
 	return enemies
+end
+
+-- Function to get miscellaneous objects
+function getEtc()
+	local etc = {}
+
+	for slot=0,23 do
+		-- Status is used to determine if the object is currently rendered
+		local status = memory.readbyte(0x1928 + slot * 32)
+		if status ~= 0 then
+			etc[#etc+1] = {
+				["action1"] = memory.readbyte(0x1928 + slot * 32 + 1),
+				["id"] = memory.readbyte(0x1928 + slot * 32 + 10)
+			}
+		end
+	end
+
+	return etc
 end
 
 -- Function to retrieve the top-left X,Y positions of all rendered items sprites
@@ -99,7 +139,10 @@ function getItems()
 		if status ~= 0 and memory.readbyte(0x1628 + slot * 48 + 10) == 2 then
 			local itemsX = memory.read_s16_le(0x1628 + slot * 48 + 5)
 			local itemsY = memory.read_s16_le(0x1628 + slot * 48 + 8)
-			items[#items+1] = {["x"] = itemsX, ["y"] = itemsY}
+			items[#items+1] = {
+				["x"] = itemsX,
+				["y"] = itemsY
+			}
 		end
 	end
 
