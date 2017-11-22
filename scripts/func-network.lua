@@ -2,15 +2,16 @@
 -- Contains functions related to the neural network and genetic evolution (NEAT) algorithm
 
 function newInnovation()
-	pool.innovation = pool.innovation + 1
-	return pool.innovation
+	Pool.innovation = Pool.innovation + 1
+	return Pool.innovation
 end
 
+-- Creates a new pool
 function newPool()
 	local pool = {}
 	pool.species = {}
 	pool.generation = 0
-	pool.innovation = Outputs
+	pool.innovation = NumOutputs
 	pool.currentSpecies = 1
 	pool.currentGenome = 1
 	pool.currentFrame = 0
@@ -19,6 +20,7 @@ function newPool()
 	return pool
 end
 
+-- Creates a new species
 function newSpecies()
 	local species = {}
 	species.topFitness = 0
@@ -29,11 +31,11 @@ function newSpecies()
 	return species
 end
 
+-- Creates a new genome
 function newGenome()
 	local genome = {}
 	genome.genes = {}
 	genome.fitness = 0
-	genome.adjustedFitness = 0
 	genome.network = {}
 	genome.maxneuron = 0
 	genome.globalRank = 0
@@ -49,6 +51,18 @@ function newGenome()
 	return genome
 end
 
+-- Creates a basic genome, to be used when initializing a population
+function basicGenome()
+	local genome = newGenome()
+	local innovation = 1
+
+	genome.maxneuron = NumInputs
+	mutate(genome)
+
+	return genome
+end
+
+-- Creates a copy of a genome
 function copyGenome(genome)
 	local genome2 = newGenome()
 	for g=1,#genome.genes do
@@ -65,16 +79,16 @@ function copyGenome(genome)
 	return genome2
 end
 
-function basicGenome()
-	local genome = newGenome()
-	local innovation = 1
+-- Creates a new neuron (basic element of the neural network)
+function newNeuron()
+	local neuron = {}
+	neuron.incoming = {}
+	neuron.value = 0.0
 
-	genome.maxneuron = Inputs
-	mutate(genome)
-
-	return genome
+	return neuron
 end
 
+-- Creates a new gene (connection between neurons)
 function newGene()
 	local gene = {}
 	gene.into = 0
@@ -86,6 +100,7 @@ function newGene()
 	return gene
 end
 
+-- Creates a copy of a gene
 function copyGene(gene)
 	local gene2 = newGene()
 	gene2.into = gene.into
@@ -97,29 +112,24 @@ function copyGene(gene)
 	return gene2
 end
 
-function newNeuron()
-	local neuron = {}
-	neuron.incoming = {}
-	neuron.value = 0.0
-
-	return neuron
-end
-
+-- Generates the network of neurons and genes
 function generateNetwork(genome)
 	local network = {}
 	network.neurons = {}
 
-	for i=1,Inputs do
+	for i=1,NumInputs do
 		network.neurons[i] = newNeuron()
 	end
 
-	for o=1,Outputs do
+	for o=1,NumOutputs do
 		network.neurons[MaxNodes+o] = newNeuron()
 	end
 
-	table.sort(genome.genes, function (a,b)
-		return (a.out < b.out)
-	end)
+	table.sort(genome.genes,
+		function (a,b)
+			return (a.out < b.out)
+		end
+	)
 	for i=1,#genome.genes do
 		local gene = genome.genes[i]
 		if gene.enabled then
@@ -137,16 +147,16 @@ function generateNetwork(genome)
 	genome.network = network
 end
 
--- 
-function evaluateNetwork(network, inputs)
-	if #inputs == 0 then
+-- Evaluates the network by providing the matrix of inputs
+function evaluateNetwork(network)
+	if #Inputs == 0 then
 		return {}
 	end
 
-	-- Converts the matrix with inputs to an array
+	-- Converts the inputs matrix to an array
 	array = {}
 	index = 1
-	for _,Value in pairs(inputs) do
+	for _,Value in pairs(Inputs) do
 		if type(Value) ~= 'table' then
 			break
 		end
@@ -160,13 +170,12 @@ function evaluateNetwork(network, inputs)
 	-- Inserts the bias neuron into the array
 	table.insert(array, 1)
 
-	-- Checks if the number of elements in the array is equal to the number of inputs
-	if #array ~= Inputs then
+	if #array ~= NumInputs then
 		console.writeline("Incorrect number of neural network inputs.")
 		return {}
 	end
 
-	for i=1,Inputs do
+	for i=1,NumInputs do
 		network.neurons[i].value = array[i]
 	end
 
@@ -184,9 +193,9 @@ function evaluateNetwork(network, inputs)
 	end
 
 	local outputs = {}
-	for o=1,Outputs do
+	for o=1,NumOutputs do
 		local button = "P1 " .. ButtonNames[o]
-		if network.neurons[MaxNodes+o].value > 0 then
+		if network.neurons[MaxNodes + o].value > 0 then
 			outputs[button] = true
 		else
 			outputs[button] = false
@@ -234,18 +243,18 @@ end
 function randomNeuron(genes, nonInput)
 	local neurons = {}
 	if not nonInput then
-		for i=1,Inputs do
+		for i=1,NumInputs do
 			neurons[i] = true
 		end
 	end
-	for o=1,Outputs do
+	for o=1,NumOutputs do
 		neurons[MaxNodes+o] = true
 	end
 	for i=1,#genes do
-		if (not nonInput) or genes[i].into > Inputs then
+		if (not nonInput) or genes[i].into > NumInputs then
 			neurons[genes[i].into] = true
 		end
-		if (not nonInput) or genes[i].out > Inputs then
+		if (not nonInput) or genes[i].out > NumInputs then
 			neurons[genes[i].out] = true
 		end
 	end
@@ -293,11 +302,11 @@ function linkMutate(genome, forceBias)
 	local neuron2 = randomNeuron(genome.genes, true)
 
 	local newLink = newGene()
-	if neuron1 <= Inputs and neuron2 <= Inputs then
+	if neuron1 <= NumInputs and neuron2 <= NumInputs then
 		-- Both input nodes
 		return
 	end
-	if neuron2 <= Inputs then
+	if neuron2 <= NumInputs then
 		-- Swap output and input
 		local temp = neuron1
 		neuron1 = neuron2
@@ -307,7 +316,7 @@ function linkMutate(genome, forceBias)
 	newLink.into = neuron1
 	newLink.out = neuron2
 	if forceBias then
-		newLink.into = Inputs
+		newLink.into = NumInputs
 	end
 
 	if containsLink(genome.genes, newLink) then
@@ -365,9 +374,9 @@ end
 function mutate(genome)
 	for mutation,rate in pairs(genome.mutationRates) do
 		if math.random(1,2) == 1 then
-			genome.mutationRates[mutation] = 0.95*rate
+			genome.mutationRates[mutation] = 0.95 * rate
 		else
-			genome.mutationRates[mutation] = 1.05263*rate
+			genome.mutationRates[mutation] = 1.05263 * rate
 		end
 	end
 
@@ -471,15 +480,15 @@ function weights(genes1, genes2)
 end
 
 function sameSpecies(genome1, genome2)
-	local dd = DeltaDisjoint*disjoint(genome1.genes, genome2.genes)
-	local dw = DeltaWeights*weights(genome1.genes, genome2.genes)
+	local dd = DeltaDisjoint * disjoint(genome1.genes, genome2.genes)
+	local dw = DeltaWeights * weights(genome1.genes, genome2.genes)
 	return dd + dw < DeltaThreshold
 end
 
 function rankGlobally()
 	local global = {}
-	for s = 1,#pool.species do
-		local species = pool.species[s]
+	for s = 1,#Pool.species do
+		local species = Pool.species[s]
 		for g = 1,#species.genomes do
 			table.insert(global, species.genomes[g])
 		end
@@ -506,8 +515,8 @@ end
 
 function totalAverageFitness()
 	local total = 0
-	for s = 1,#pool.species do
-		local species = pool.species[s]
+	for s = 1,#Pool.species do
+		local species = Pool.species[s]
 		total = total + species.averageFitness
 	end
 
@@ -515,14 +524,14 @@ function totalAverageFitness()
 end
 
 function cullSpecies(cutToOne)
-	for s = 1,#pool.species do
-		local species = pool.species[s]
+	for s = 1,#Pool.species do
+		local species = Pool.species[s]
 
 		table.sort(species.genomes, function (a,b)
 			return (a.fitness > b.fitness)
 		end)
 
-		local remaining = math.ceil(#species.genomes/2)
+		local remaining = math.ceil(#species.genomes / 2)
 		if cutToOne then
 			remaining = 1
 		end
@@ -551,8 +560,8 @@ end
 function removeStaleSpecies()
 	local survived = {}
 
-	for s = 1,#pool.species do
-		local species = pool.species[s]
+	for s = 1,#Pool.species do
+		local species = Pool.species[s]
 
 		table.sort(species.genomes, function (a,b)
 			return (a.fitness > b.fitness)
@@ -564,33 +573,33 @@ function removeStaleSpecies()
 		else
 			species.staleness = species.staleness + 1
 		end
-		if species.staleness < StaleSpecies or species.topFitness >= pool.maxFitness then
+		if species.staleness < StaleSpecies or species.topFitness >= Pool.maxFitness then
 			table.insert(survived, species)
 		end
 	end
 
-	pool.species = survived
+	Pool.species = survived
 end
 
 function removeWeakSpecies()
 	local survived = {}
 
 	local sum = totalAverageFitness()
-	for s = 1,#pool.species do
-		local species = pool.species[s]
+	for s = 1,#Pool.species do
+		local species = Pool.species[s]
 		breed = math.floor(species.averageFitness / sum * Population)
 		if breed >= 1 then
 			table.insert(survived, species)
 		end
 	end
 
-	pool.species = survived
+	Pool.species = survived
 end
 
 function addToSpecies(child)
 	local foundSpecies = false
-	for s=1,#pool.species do
-		local species = pool.species[s]
+	for s=1,#Pool.species do
+		local species = Pool.species[s]
 		if not foundSpecies and sameSpecies(child, species.genomes[1]) then
 			table.insert(species.genomes, child)
 			foundSpecies = true
@@ -600,7 +609,7 @@ function addToSpecies(child)
 	if not foundSpecies then
 		local childSpecies = newSpecies()
 		table.insert(childSpecies.genomes, child)
-		table.insert(pool.species, childSpecies)
+		table.insert(Pool.species, childSpecies)
 	end
 end
 
@@ -609,23 +618,23 @@ function newGeneration()
 	rankGlobally()
 	removeStaleSpecies()
 	rankGlobally()
-	for s = 1,#pool.species do
-		local species = pool.species[s]
+	for s = 1,#Pool.species do
+		local species = Pool.species[s]
 		calculateAverageFitness(species)
 	end
 	removeWeakSpecies()
 	local sum = totalAverageFitness()
 	local children = {}
-	for s = 1,#pool.species do
-		local species = pool.species[s]
+	for s = 1,#Pool.species do
+		local species = Pool.species[s]
 		breed = math.floor(species.averageFitness / sum * Population) - 1
 		for i=1,breed do
 			table.insert(children, breedChild(species))
 		end
 	end
 	cullSpecies(true) -- Cull all but the top member of each species
-	while #children + #pool.species < Population do
-		local species = pool.species[math.random(1, #pool.species)]
+	while #children + #Pool.species < Population do
+		local species = Pool.species[math.random(1, #Pool.species)]
 		table.insert(children, breedChild(species))
 	end
 	for c=1,#children do
@@ -633,56 +642,58 @@ function newGeneration()
 		addToSpecies(child)
 	end
 
-	pool.generation = pool.generation + 1
+	Pool.generation = Pool.generation + 1
 
-	writeFile("backup." .. pool.generation .. "." .. forms.gettext(saveLoadFile))
+	writeFile("backup." .. Pool.generation .. "." .. forms.gettext(saveLoadFile))
 end
 
-function initializePool(inputs)
-	pool = newPool()
+function initializePool()
+	Pool = newPool()
 
 	for i=1,Population do
 		basic = basicGenome()
 		addToSpecies(basic)
 	end
 
-	initializeRun(inputs)
+	initializeRun()
 end
 
 function clearJoypad()
 	controller = {}
 
-	for b = 1,Outputs do
+	for b = 1,NumOutputs do
 		controller["P1 " .. ButtonNames[b]] = false
 	end
 
 	joypad.set(controller)
 end
 
-function initializeRun(inputs)
+function initializeRun()
 	savestate.loadslot(SavestateSlot)
-	Score = 0
-	Rightmost = 0
-	pool.currentFrame = 0
-	timeout = TimeoutConstant
+
 	clearJoypad()
 
-	local species = pool.species[pool.currentSpecies]
-	local genome = species.genomes[pool.currentGenome]
+	Score = 0
+	Rightmost = 0
+	Pool.currentFrame = 0
+	Timeout = TimeoutConstant
+
+	local species = Pool.species[Pool.currentSpecies]
+	local genome = species.genomes[Pool.currentGenome]
 
 	generateNetwork(genome)
-	evaluateCurrent(inputs)
+	evaluateCurrent(Inputs)
 end
 
-function evaluateCurrent(inputs)
-	if inputs == nil then
+function evaluateCurrent()
+	if Inputs == nil then
 		return
 	end
 
-	local species = pool.species[pool.currentSpecies]
-	local genome = species.genomes[pool.currentGenome]
+	local species = Pool.species[Pool.currentSpecies]
+	local genome = species.genomes[Pool.currentGenome]
 
-	controller = evaluateNetwork(genome.network, inputs)
+	controller = evaluateNetwork(genome.network)
 
 	if controller["P1 Left"] and controller["P1 Right"] then
 		controller["P1 Left"] = false
@@ -693,20 +704,22 @@ function evaluateCurrent(inputs)
 end
 
 function nextGenome()
-	pool.currentGenome = pool.currentGenome + 1
-	if pool.currentGenome > #pool.species[pool.currentSpecies].genomes then
-		pool.currentGenome = 1
-		pool.currentSpecies = pool.currentSpecies + 1
-		if pool.currentSpecies > #pool.species then
+	Pool.currentGenome = Pool.currentGenome + 1
+	-- If no more genomes exists for the current species, then go to the next species
+	if Pool.currentGenome > #Pool.species[Pool.currentSpecies].genomes then
+		Pool.currentGenome = 1
+		Pool.currentSpecies = Pool.currentSpecies + 1
+		-- If no more species exists for the current generation, then go to the next generation
+		if Pool.currentSpecies > #Pool.species then
 			newGeneration()
-			pool.currentSpecies = 1
+			Pool.currentSpecies = 1
 		end
 	end
 end
 
 function fitnessAlreadyMeasured()
-	local species = pool.species[pool.currentSpecies]
-	local genome = species.genomes[pool.currentGenome]
+	local species = Pool.species[Pool.currentSpecies]
+	local genome = species.genomes[Pool.currentGenome]
 
 	return genome.fitness ~= 0
 end
@@ -717,7 +730,7 @@ function displayGenome(genome)
 	local cells = {}
 	local biasCell = {}
 
-	-- Inputs
+	-- NumInputs
 	local k = 1
 	for i=0,13 do
 		for j=0,15 do
@@ -733,11 +746,11 @@ function displayGenome(genome)
 	-- Bias
 	biasCell.x = MinimapOriginX + MinimapUnitSize * 15
 	biasCell.y = MinimapOriginY + MinimapUnitSize * 15
-	biasCell.value = network.neurons[Inputs].value
-	cells[Inputs] = biasCell
+	biasCell.value = network.neurons[NumInputs].value
+	cells[NumInputs] = biasCell
 
 	-- Outputs and its names
-	for o = 1,Outputs do
+	for o = 1,NumOutputs do
 		cell = {}
 		cell.x = MinimapOriginX + MinimapUnitSize * 37
 		cell.y = MinimapOriginY + 10 * o - 7
@@ -752,7 +765,7 @@ function displayGenome(genome)
 		gui.drawText(
 			MinimapOriginX + MinimapUnitSize * 37 + 7,
 			MinimapOriginY + 10 * o - 12,
-			ButtonNames[o],
+			ButtonNamesMask[o],
 			color,
 			9
 		)
@@ -771,7 +784,7 @@ function displayGenome(genome)
 	-- Networks neurons
 	for n,neuron in pairs(network.neurons) do
 		cell = {}
-		if n > Inputs and n <= MaxNodes then
+		if n > NumInputs and n <= MaxNodes then
 			cell.x = 140
 			cell.y = 40
 			cell.value = neuron.value
@@ -785,7 +798,7 @@ function displayGenome(genome)
 			if gene.enabled then
 				local c1 = cells[gene.into]
 				local c2 = cells[gene.out]
-				if gene.into > Inputs and gene.into <= MaxNodes then
+				if gene.into > NumInputs and gene.into <= MaxNodes then
 					c1.x = 0.75*c1.x + 0.25*c2.x
 					if c1.x >= c2.x then
 						c1.x = c1.x - 40
@@ -800,7 +813,7 @@ function displayGenome(genome)
 					c1.y = 0.75*c1.y + 0.25*c2.y
 
 				end
-				if gene.out > Inputs and gene.out <= MaxNodes then
+				if gene.out > NumInputs and gene.out <= MaxNodes then
 					c2.x = 0.25*c1.x + 0.75*c2.x
 					if c1.x >= c2.x then
 						c2.x = c2.x + 40
@@ -819,7 +832,7 @@ function displayGenome(genome)
 
 	-- Draws the minimap cells
 	for n,cell in pairs(cells) do
-		if n < Inputs and cell.value ~= 0 then
+		if n < NumInputs and cell.value ~= 0 then
 			local color = math.floor((cell.value + 1) / 2 * 256)
 			if color > 255 then color = 255 end
 			if color < 0 then color = 0 end
@@ -832,7 +845,7 @@ function displayGenome(genome)
 				0x00000000,
 				color
 			)
-		elseif n >= Inputs or cell.value ~= 0 then
+		elseif n >= NumInputs or cell.value ~= 0 then
 			local color = math.floor((cell.value + 1) / 2 * 256)
 			if color > 255 then color = 255 end
 			if color < 0 then color = 0 end
@@ -872,7 +885,7 @@ function displayGenome(genome)
 		)
 	end
 
-	-- Draw the network connections (lines)
+	-- Draw the network connections/lines/genes
 	for _,gene in pairs(genome.genes) do
 		if gene.enabled then
 			local c1 = cells[gene.into]
@@ -910,10 +923,10 @@ end
 
 function writeFile(filename)
 	local file = io.open("pool/" .. filename, "w")
-	file:write(pool.generation .. "\n")
-	file:write(pool.maxFitness .. "\n")
-	file:write(#pool.species .. "\n")
-	for n,species in pairs(pool.species) do
+	file:write(Pool.generation .. "\n")
+	file:write(Pool.maxFitness .. "\n")
+	file:write(#Pool.species .. "\n")
+	for n,species in pairs(Pool.species) do
 		file:write(species.topFitness .. "\n")
 		file:write(species.staleness .. "\n")
 		file:write(#species.genomes .. "\n")
@@ -942,21 +955,16 @@ function writeFile(filename)
 	file:close()
 end
 
-function savePool()
-	local filename = forms.gettext(saveLoadFile)
-	writeFile(filename)
-end
-
 function loadFile(filename)
 	local file = io.open("pool/" .. filename, "r")
-	pool = newPool()
-	pool.generation = file:read("*number")
-	pool.maxFitness = file:read("*number")
-	forms.settext(maxFitnessLabel, "Max Fitness: " .. math.floor(pool.maxFitness))
+	Pool = newPool()
+	Pool.generation = file:read("*number")
+	Pool.maxFitness = file:read("*number")
+	forms.settext(maxFitnessLabel, "Max Fitness: " .. math.floor(Pool.maxFitness))
 	local numSpecies = file:read("*number")
 	for s=1,numSpecies do
 		local species = newSpecies()
-		table.insert(pool.species, species)
+		table.insert(Pool.species, species)
 		species.topFitness = file:read("*number")
 		species.staleness = file:read("*number")
 		local numGenomes = file:read("*number")
@@ -985,13 +993,20 @@ function loadFile(filename)
 			end
 		end
 	end
-		file:close()
+	file:close()
 
 	while fitnessAlreadyMeasured() do
 		nextGenome()
 	end
+
 	initializeRun()
-	pool.currentFrame = pool.currentFrame + 1
+
+	Pool.currentFrame = Pool.currentFrame + 1
+end
+
+function savePool()
+	local filename = forms.gettext(saveLoadFile)
+	writeFile(filename)
 end
 
 function loadPool()
@@ -1002,7 +1017,7 @@ end
 function playTop()
 	local maxfitness = 0
 	local maxs, maxg
-	for s,species in pairs(pool.species) do
+	for s,species in pairs(Pool.species) do
 		for g,genome in pairs(species.genomes) do
 			if genome.fitness > maxfitness then
 				maxfitness = genome.fitness
@@ -1012,20 +1027,15 @@ function playTop()
 		end
 	end
 
-	pool.currentSpecies = maxs
-	pool.currentGenome = maxg
-	pool.maxFitness = maxfitness
-	forms.settext(maxFitnessLabel, "Max Fitness: " .. math.floor(pool.maxFitness))
+	Pool.currentSpecies = maxs
+	Pool.currentGenome = maxg
+	Pool.maxFitness = maxfitness
+	forms.settext(maxFitnessLabel, "Max Fitness: " .. math.floor(Pool.maxFitness))
 	initializeRun()
-	pool.currentFrame = pool.currentFrame + 1
+	Pool.currentFrame = Pool.currentFrame + 1
 	return
 end
 
--- function computeFitness(x, hp, frame) -- HP goes from 0 to 16
--- 	return x + 25 * hp
--- end
-
 function computeFitness(y, hpDepleted) -- HP goes from 0 to 16
-
 	return -0.6 * (y - 377) + 3.5 * (Rightmost - 133) + 200 * Score -90 * (16 - hpDepleted)
 end

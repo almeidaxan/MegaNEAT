@@ -15,9 +15,10 @@ DisableMutationChance = 0.4
 MaxNodes = 1000000
 StepSize = 0.1
 TimeoutConstant = 20
-Inputs = (16 * 14) + 1 -- 16 by 14 tiles in the minimap, +1 because of the intercept
+NumInputs = 16 * 14 + 1 -- 16 by 14 tiles in the minimap, +1 because of the bias
 ButtonNames = {"B", "Y", "Left", "Right"}
-Outputs = #ButtonNames
+ButtonNames = {"Jump", "Shoot", "Left", "Right"}
+NumOutputs = #ButtonNames
 SavestateSlot = 1
 
 -- Loading scripts with functions
@@ -25,18 +26,18 @@ dofile("func-auxiliary.lua")
 dofile("func-minimap.lua")
 dofile("func-network.lua")
 
--- Checks if a pool already exists; if not, initialize one
-if pool == nil then
-	local inputs = getInputs()
-	initializePool(inputs)
+-- Checks if the pool already exists; if not, initialize one
+if Pool == nil then
+	Inputs = getInputs()
+	initializePool(Inputs)
 end
 
--- Creates a temporary file with the current pool
+-- Creates a temporary file for the current pool
 writeFile("temp.pool")
 
 -- Creates a form to enabling further evaluation of the outputs
 form = forms.newform(400, 270, "Fitness")
-maxFitnessLabel = forms.label(form, "Max Fitness: " .. math.floor(pool.maxFitness), 5, 8)
+maxFitnessLabel = forms.label(form, "Max Fitness: " .. math.floor(Pool.maxFitness), 5, 8)
 showMutationRates = forms.checkbox(form, "Show M-Rates", 5, 52)
 restartButton = forms.button(form, "Restart", initializePool, 5, 77)
 saveButton = forms.button(form, "Save", savePool, 5, 102)
@@ -54,20 +55,20 @@ while true do
     updateTiles()
 
     -- Converts minimap info into a matrix of inputs
-	local inputs = getInputs()
+	Inputs = getInputs()
 	-- LABELS OF THE INPUT MATRIX:
 	--  0 = Empty
 	--  1 = Floor (ground)
 	-- -1 = Enemies, enemies bullets/shots, items
 
 	-- For every 5 frames, re-evaluate the inputs
-	if pool.currentFrame % 5 == 0 then
-        evaluateCurrent(inputs)
+	if Pool.currentFrame % 5 == 0 then
+        evaluateCurrent()
 	end
 
 	-- Define the species and genomes of the current pool
-	local species = pool.species[pool.currentSpecies]
-	local genome = species.genomes[pool.currentGenome]
+	local species = Pool.species[Pool.currentSpecies]
+	local genome = species.genomes[Pool.currentGenome]
 
 	-- Display the current neural network, with its connections and neurons
 	if not forms.ischecked(hideNetwork) then
@@ -82,17 +83,16 @@ while true do
 
 	if megamanX > Rightmost then
 		Rightmost = megamanX
-		timeout = TimeoutConstant
+		Timeout = TimeoutConstant
 	end
 
-	timeout = timeout - 1
+	Timeout = Timeout - 1
 
-	local timeoutBonus = pool.currentFrame / 4
+	local timeoutBonus = Pool.currentFrame / 4
 
 	-- Define a score based on shots that hit enemies
 	local bulletsx = getBulletsX()
 	local etc = getEtc()
-
 	if Score == nil then
 		Score = 0
 	else 
@@ -105,7 +105,6 @@ while true do
 				end
 			end
 		end
-
 		for i=1,#etc do
 			if etc[i].action1 == 0 and etc[i].id == 9 then
 				Score = Score + 1
@@ -113,8 +112,8 @@ while true do
 		end
 	end
 
-	-- Kills
-	if timeout + timeoutBonus <= 0 or megamanHP == 0 then
+	-- Restarts the run if the individual dies or times out
+	if megamanHP == 0 or Timeout + timeoutBonus <= 0 then
         local fitness = computeFitness(megamanY, megamanHP)
 
 		if fitness <= 0 then
@@ -123,28 +122,35 @@ while true do
 
 		genome.fitness = fitness
 
-		if fitness > pool.maxFitness then
-			pool.maxFitness = fitness
-			-- forms.settext(maxFitnessLabel, "Max Fitness: " .. math.floor(pool.maxFitness))
-			-- writeFile("backup." .. pool.generation .. "." .. forms.gettext(saveLoadFile))
+		if fitness > Pool.maxFitness then
+			Pool.maxFitness = fitness
+			forms.settext(maxFitnessLabel, "Max Fitness: " .. math.floor(Pool.maxFitness))
+			writeFile("backup." .. Pool.generation .. "." .. forms.gettext(saveLoadFile))
 		end
 
-		console.writeline("Gen " .. pool.generation .. " species " .. pool.currentSpecies .. " genome " .. pool.currentGenome .. " fitness: " .. fitness)
-		pool.currentSpecies = 1
-		pool.currentGenome = 1
+		-- Prints the indivual results to the console
+		console.writeline(
+			"Gen " .. Pool.generation ..
+			" species " .. Pool.currentSpecies ..
+			" genome " .. Pool.currentGenome ..
+			" fitness: " .. fitness
+		)
 
-		-- Advances through the genomes of the species
+		-- Finds the next individual whose fitness wasn't yet measured
+		Pool.currentSpecies = 1
+		Pool.currentGenome = 1
 		while fitnessAlreadyMeasured() do
 			nextGenome()
 		end
 
-		-- Restart
-		initializeRun(inputs)
+		-- Restart the individual
+		initializeRun()
 	end
 
+	-- Computes the percentage of genomes that already had their fitness evaluated
 	local measured = 0
 	local total = 0
-	for _,species in pairs(pool.species) do
+	for _,species in pairs(Pool.species) do
 		for _,genome in pairs(species.genomes) do
 			total = total + 1
 			if genome.fitness ~= 0 then
@@ -153,15 +159,24 @@ while true do
 		end
 	end
 
-	-- Draws banner onto which to display evolution info
+	-- Draws a banner onto which to display evolution info
 	if not forms.ischecked(hideBanner) then
 		gui.drawBox(0, 0, 300, 26, 0xD0FFFFFF, 0xD0FFFFFF)
-		gui.drawText(0, 0, "Gen " .. pool.generation .. " species " .. pool.currentSpecies .. " genome " .. pool.currentGenome .. " (" .. math.floor(measured/total*100) .. "%)", 0xFF000000, 11)
-		gui.drawText(0, 12, "Fitness: " .. math.floor(computeFitness(megamanY, megamanHP)), 0xFF000000, 11)
-		gui.drawText(100, 12, "Max Fitness: " .. math.floor(pool.maxFitness), 0xFF000000, 11)
+		gui.drawText(0, 0,
+			"Gen " .. Pool.generation ..
+			" species " .. Pool.currentSpecies ..
+			" genome " .. Pool.currentGenome ..
+			" (" .. math.floor(measured / total * 100) .. "%)",
+			0xFF000000, 11)
+		gui.drawText(0, 12,
+			"Fitness: " .. math.floor(computeFitness(megamanY, megamanHP)),
+			0xFF000000, 11)
+		gui.drawText(100, 12,
+			"Max Fitness: " .. math.floor(Pool.maxFitness),
+			0xFF000000, 11)
 	end
 
 	-- Advances an emulator frame
-	pool.currentFrame = pool.currentFrame + 1
+	Pool.currentFrame = Pool.currentFrame + 1
 	emu.frameadvance()
 end
