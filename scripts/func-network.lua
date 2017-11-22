@@ -819,25 +819,57 @@ function displayGenome(genome)
 
 	-- Draws the minimap cells
 	for n,cell in pairs(cells) do
-		if n < Inputs and cell.value > 0 then
+		if n < Inputs and cell.value ~= 0 then
+			local color = math.floor((cell.value + 1) / 2 * 256)
+			if color > 255 then color = 255 end
+			if color < 0 then color = 0 end
+			color = 0xFF000000 + color * 0x10000 + color * 0x100 + color
 			gui.drawBox(
 				cell.x,
 				cell.y,
 				cell.x + MinimapUnitSize + 1,
 				cell.y + MinimapUnitSize + 1,
 				0x00000000,
-				getColor(cell.value)
+				color
 			)
-		elseif n >= Inputs then
+		elseif n >= Inputs or cell.value ~= 0 then
+			local color = math.floor((cell.value + 1) / 2 * 256)
+			if color > 255 then color = 255 end
+			if color < 0 then color = 0 end
+			local opacity = 0xFF000000
+			if cell.value == 0 then
+				opacity = 0x30000000
+			end
+			color = opacity + color * 0x10000 + color * 0x100 + color
 			gui.drawBox(
 				cell.x,
 				cell.y,
 				cell.x + MinimapUnitSize + 1,
 				cell.y + MinimapUnitSize + 1,
-				0x80000000,
-				getColor(cell.value)
+				opacity,
+				color
 			)
 		end
+	end
+
+	-- Draws Mega Man on the minimap
+	local mega = {
+		["x"] = memory.read_s16_le(0x0BAD) + 5, -- Adding '5' to correct the X position
+		["y"] = memory.read_s16_le(0x0BB0) + 10 -- Adding '10' to correct the Y position
+	}
+	local screenX = memory.read_s16_le(0x00B4)
+	local screenY = memory.read_s16_le(0x00B6)
+	mega.x = math.floor((mega.x - screenX) / 16)
+	mega.y = math.floor((mega.y - screenY) / 16)
+	if mega.x >= 0 and mega.x <= 15 and mega.y >= 0 and mega.y <= 13 then
+		gui.drawBox(
+			MinimapOriginX + MinimapUnitSize * mega.x,
+			MinimapOriginY + MinimapUnitSize * mega.y,
+			MinimapOriginX + MinimapUnitSize * mega.x + MinimapUnitSize + 1,
+			MinimapOriginY + MinimapUnitSize * mega.y + MinimapUnitSize + 1,
+			0x00000000,
+			0xFF0000FF
+		)
 	end
 
 	-- Draw the network connections (lines)
@@ -993,6 +1025,7 @@ end
 -- 	return x + 25 * hp
 -- end
 
-function computeFitness(x, y, hp) -- HP goes from 0 to 16
-	return -0.5 * y + 1 * x + 80 * Score + 50 * hp
+function computeFitness(y, hpDepleted) -- HP goes from 0 to 16
+
+	return -0.6 * (y - 377) + 3.5 * (Rightmost - 133) + 200 * Score -90 * (16 - hpDepleted)
 end

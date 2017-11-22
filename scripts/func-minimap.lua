@@ -236,28 +236,23 @@ function getInputs()
 		end
 	end
 
-	-- Draws enemies on the minimap (value = 2)
+	-- Draws enemies on the minimap (value = -1)
 	local enemies = getEnemies()
 	for i=1,#enemies do
-		inputs = updateInputs(enemies[i], screenX, screenY, inputs, 2)
+		inputs = updateInputs(enemies[i], screenX, screenY, inputs, -1)
 	end
 
-	-- Draws enemies' bullets on the minimap (value = 3)
+	-- Draws enemies' bullets on the minimap (value = -1)
 	local bullets = getBullets()
 	for i=1,#bullets do
-		inputs = updateInputs(bullets[i], screenX, screenY, inputs, 3)
+		inputs = updateInputs(bullets[i], screenX, screenY, inputs, -1)
 	end
 
-	-- Draws items on the minimap (value = 4)
+	-- Draws items on the minimap (value = -1)
 	local items = getItems()
 	for i=1,#items do
-		inputs = updateInputs(items[i], screenX, screenY, inputs, 4)
+		inputs = updateInputs(items[i], screenX, screenY, inputs, -1)
 	end
-
-	-- Draws Mega Man on the minimap (value = 5)
-	local mega = {["x"] = memory.read_s16_le(0x0BAD) + 5, -- Adding '15' to correct the X position
-				  ["y"] = memory.read_s16_le(0x0BB0) + 10} -- Adding '10' to correct the Y position
-	inputs = updateInputs(mega, screenX, screenY, inputs, 5)
 
 	return inputs
 end

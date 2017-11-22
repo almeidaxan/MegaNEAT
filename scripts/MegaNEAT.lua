@@ -56,12 +56,9 @@ while true do
     -- Converts minimap info into a matrix of inputs
 	local inputs = getInputs()
 	-- LABELS OF THE INPUT MATRIX:
-	-- 0 = Empty
-	-- 1 = Floor (ground)
-	-- 2 = Enemies
-	-- 3 = Enemies' bullets/shots
-	-- 4 = Health recovery items
-	-- 5 = Mega Man
+	--  0 = Empty
+	--  1 = Floor (ground)
+	-- -1 = Enemies, enemies bullets/shots, items
 
 	-- For every 5 frames, re-evaluate the inputs
 	if pool.currentFrame % 5 == 0 then
@@ -118,7 +115,7 @@ while true do
 
 	-- Kills
 	if timeout + timeoutBonus <= 0 or megamanHP == 0 then
-        local fitness = computeFitness(megamanX, megamanY, megamanHP)
+        local fitness = computeFitness(megamanY, megamanHP)
 
 		if fitness <= 0 then
 			fitness = -1
@@ -160,7 +157,7 @@ while true do
 	if not forms.ischecked(hideBanner) then
 		gui.drawBox(0, 0, 300, 26, 0xD0FFFFFF, 0xD0FFFFFF)
 		gui.drawText(0, 0, "Gen " .. pool.generation .. " species " .. pool.currentSpecies .. " genome " .. pool.currentGenome .. " (" .. math.floor(measured/total*100) .. "%)", 0xFF000000, 11)
-		gui.drawText(0, 12, "Fitness: " .. math.floor(computeFitness(megamanX, megamanY, megamanHP)), 0xFF000000, 11)
+		gui.drawText(0, 12, "Fitness: " .. math.floor(computeFitness(megamanY, megamanHP)), 0xFF000000, 11)
 		gui.drawText(100, 12, "Max Fitness: " .. math.floor(pool.maxFitness), 0xFF000000, 11)
 	end
 
