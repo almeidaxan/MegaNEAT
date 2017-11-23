@@ -2,8 +2,8 @@
 -- Contains functions and variables related to the construction and drawing of the minimap/input matrix
 
 -- Minimap and screen parameters
-MinimapOriginX = 25 -- Minimap origin X position
-MinimapOriginY = 30 -- Minimap origin Y position
+MinimapOriginX = 5 -- Minimap origin X position
+MinimapOriginY = 137 -- Minimap origin Y position
 MinimapUnitSize = 5 -- Size in pixels of the minimap square units (must be an odd number)
 ScreenDimX = 256 -- Screen X dimension in pixels
 ScreenDimY = 224 -- Screen Y dimension in pixels

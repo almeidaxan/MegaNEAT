@@ -645,7 +645,8 @@ function newGeneration()
 
 	Pool.generation = Pool.generation + 1
 
-	writeFile("pool/backup." .. Pool.generation .. "." .. SavestateSlot .. ".pool")
+	writeFile("pool/backup." .. Pool.generation .. ".pool")
+	-- writeFile("pool/backup." .. Pool.generation .. "." .. SavestateSlot .. ".pool")
 end
 
 function initializePool()
@@ -670,7 +671,12 @@ function clearJoypad()
 end
 
 function initializeRun()
-	savestate.loadslot(SavestateSlot)
+	local rand = math.random(1,3)
+	savestate.loadslot(rand)
+	
+	-- Update the diff variables with initial Mega Man positions in each savestate
+	DiffRightmost = memory.read_s16_le(0x0BAD) + 5
+	DiffY = memory.read_s16_le(0x0BB0) + 10
 
 	clearJoypad()
 
@@ -753,7 +759,7 @@ function displayGenome(genome)
 	-- Outputs and its names
 	for o = 1,NumOutputs do
 		cell = {}
-		cell.x = MinimapOriginX + MinimapUnitSize * 36
+		cell.x = MinimapOriginX + MinimapUnitSize * 42
 		cell.y = MinimapOriginY + 10 * o + 7
 		cell.value = network.neurons[MaxNodes + o].value
 		cells[MaxNodes + o] = cell
@@ -764,11 +770,12 @@ function displayGenome(genome)
 			color = 0xB0000000
 		end
 		gui.drawText(
-			MinimapOriginX + MinimapUnitSize * 36 + 7,
-			MinimapOriginY + 10 * o + 2,
+			MinimapOriginX + MinimapUnitSize * 42 + 7,
+			MinimapOriginY + 10 * o + 4,
 			ButtonNamesMask[o],
 			color,
-			9
+			0x00000000,
+			10
 		)
 	end
 
@@ -913,13 +920,13 @@ function displayGenome(genome)
 		end
 	end
 
-	-- if forms.ischecked(showMutationRates) then
-	-- 	local pos = 100
-	-- 	for mutation,rate in pairs(genome.mutationRates) do
-	-- 		gui.drawText(100, pos, mutation .. ": " .. rate, 0xFF000000, 10)
-	-- 		pos = pos + 8
-	-- 	end
-	-- end
+	if forms.ischecked(showMutationRates) then
+		local y = 150
+		for mutation,rate in pairs(genome.mutationRates) do
+			gui.drawText(100, y, mutation .. ": " .. rate, 0xFFFFFFFF, 0x00000000, 11)
+			y = y + 8
+		end
+	end
 end
 
 function writeFile(filename)
@@ -1045,10 +1052,10 @@ function playTop()
 end
 
 function computeFitness(y, hp)
-	-- y is the y-axis position (-377 is used to standardize the initial position as 0)
+	-- y is the y-axis position (-DiffY is used to standardize the initial position as 0)
 	-- hp is Mega Man's health, which goes from 0 to 16 
-	-- Rightmost is the position far to the right reached (-133 is used to standardize the initial position as 0)
+	-- Rightmost is the position far to the right reached (-DiffRightmost is used to standardize the initial position as 0)
 	-- Score is computed based on how many Mega Man shots hit the enemies
-	local fitness = (-0.6 * (y - 377)) + (3.5 * (Rightmost - 133)) + (200 * Score) + (-90 * (16 - hp))
+	local fitness = (-0.6 * (y - DiffY)) + (3.5 * (Rightmost - DiffRightmost)) + (200 * Score) + (-90 * (16 - hp))
 	return fitness
 end

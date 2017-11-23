@@ -14,12 +14,14 @@ EnableMutationChance = 0.2
 DisableMutationChance = 0.4
 MaxNodes = 1000000
 StepSize = 0.1
-TimeoutConstant = 20
+TimeoutConstant = 15
 NumInputs = 16 * 14 + 1 -- 16 by 14 tiles in the minimap, +1 because of the bias
 ButtonNames = {"B", "Y", "Left", "Right"}
 ButtonNamesMask = {"Jump", "Shoot", "Left", "Right"}
 NumOutputs = #ButtonNames
-SavestateSlot = 1
+DiffY = 0
+DiffRightmost = 0
+-- SavestateSlot = 1
 
 -- Loading scripts with functions
 dofile("func-auxiliary.lua")
@@ -44,11 +46,11 @@ forms.label(form, "Save/Load:", 5, 70)
 saveLoadFile = forms.textbox(form, "example.pool", 150, 25, nil, 5, 95)
 forms.button(form, "Save", savePool, 5, 122, 75, 40)
 forms.button(form, "Load", loadPool, 80, 122, 75, 40)
+showMutationRates = forms.checkbox(form, "Show M-Rates", 110, 180)
+hideBanner = forms.checkbox(form, "Banner", 110, 205)
+hideNetwork = forms.checkbox(form, "Network", 110, 230)
 forms.label(form, "Restart:", 5, 180)
 forms.button(form, "Restart", initializePool, 5, 205, 75, 40)
--- showMutationRates = forms.checkbox(form, "Show M-Rates", 5, 52)
--- hideBanner = forms.checkbox(form, "Banner", 5, 190)
--- hideNetwork = forms.checkbox(form, "Network", 5, 210)
 event.onexit(destroyForm) -- Destroys the form whenever the script is stopped or the emulator is closed
 
 -- Main execution loop
@@ -72,9 +74,9 @@ while true do
 	local genome = species.genomes[Pool.currentGenome]
 
 	-- Display the current neural network, with its connections and neurons
-	-- if not forms.ischecked(hideNetwork) then
+	if not forms.ischecked(hideNetwork) then
 		displayGenome(genome)
-	-- end
+	end
 
 	joypad.set(controller)
 
@@ -126,7 +128,8 @@ while true do
 		if fitness > Pool.maxFitness then
 			Pool.maxFitness = fitness
 			forms.settext(maxFitnessLabel, math.floor(Pool.maxFitness))
-			writeFile("pool/backup." .. Pool.generation .. "." .. SavestateSlot .. ".pool")
+			writeFile("pool/backup." .. Pool.generation .. ".pool")
+			-- writeFile("pool/backup." .. Pool.generation .. "." .. SavestateSlot .. ".pool")
 		end
 
 		-- Prints the indivual results to the console
@@ -161,21 +164,27 @@ while true do
 	end
 
 	-- Draws a banner onto which to display evolution info
-	-- if not forms.ischecked(hideBanner) then
-		gui.drawBox(0, 0, 300, 26, 0xD0FFFFFF, 0xD0FFFFFF)
-		gui.drawText(0, 0,
-			"Gen " .. Pool.generation ..
-			" species " .. Pool.currentSpecies ..
-			" genome " .. Pool.currentGenome ..
-			" (" .. math.floor(measured / total * 100) .. "%)",
-			0xFF000000, 11)
-		gui.drawText(0, 12,
+	if not forms.ischecked(hideBanner) then
+		gui.drawBox(0, 0, 300, 33, 0x80C0C0C0, 0x80C0C0C0)
+		gui.drawText(1, -1,
+			"Generation " .. Pool.generation,
+			0xFF000000, 0x00000000, 11, "Courier New", "Bold")
+		gui.drawText(0, 10,
+			"Spec. " .. Pool.currentSpecies,
+			0xFF000000, 0x00000000, 11)
+		gui.drawText(0, 20,
+			"Geno. " .. Pool.currentGenome,
+			0xFF000000, 0x00000000, 11)
+		gui.drawText(65, 14,
+			"(" .. math.floor(measured / total * 100) .. "%)",
+			0xFF000000, 0x00000000, 12)
+		gui.drawText(143, 2,
 			"Fitness: " .. math.floor(computeFitness(megamanY, megamanHP)),
-			0xFF000000, 11)
-		gui.drawText(100, 12,
-			"Max Fitness: " .. math.floor(Pool.maxFitness),
-			0xFF000000, 11)
-	-- end
+			0xFF000000, 0x00000000, 12)
+		gui.drawText(173, 15,
+			"Max: " .. math.floor(Pool.maxFitness),
+			0xFF000000, 0x00000000, 12)
+	end
 
 	-- Advances an emulator frame
 	Pool.currentFrame = Pool.currentFrame + 1
