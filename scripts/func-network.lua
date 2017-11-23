@@ -573,6 +573,7 @@ function removeStaleSpecies()
 		else
 			species.staleness = species.staleness + 1
 		end
+
 		if species.staleness < StaleSpecies or species.topFitness >= Pool.maxFitness then
 			table.insert(survived, species)
 		end
@@ -644,7 +645,7 @@ function newGeneration()
 
 	Pool.generation = Pool.generation + 1
 
-	writeFile("backup." .. Pool.generation .. "." .. forms.gettext(saveLoadFile))
+	writeFile("pool/backup." .. Pool.generation .. "." .. SavestateSlot .. ".pool")
 end
 
 function initializePool()
@@ -682,7 +683,7 @@ function initializeRun()
 	local genome = species.genomes[Pool.currentGenome]
 
 	generateNetwork(genome)
-	evaluateCurrent(Inputs)
+	evaluateCurrent()
 end
 
 function evaluateCurrent()
@@ -752,8 +753,8 @@ function displayGenome(genome)
 	-- Outputs and its names
 	for o = 1,NumOutputs do
 		cell = {}
-		cell.x = MinimapOriginX + MinimapUnitSize * 37
-		cell.y = MinimapOriginY + 10 * o - 7
+		cell.x = MinimapOriginX + MinimapUnitSize * 36
+		cell.y = MinimapOriginY + 10 * o + 7
 		cell.value = network.neurons[MaxNodes + o].value
 		cells[MaxNodes + o] = cell
 		local color
@@ -763,8 +764,8 @@ function displayGenome(genome)
 			color = 0xB0000000
 		end
 		gui.drawText(
-			MinimapOriginX + MinimapUnitSize * 37 + 7,
-			MinimapOriginY + 10 * o - 12,
+			MinimapOriginX + MinimapUnitSize * 36 + 7,
+			MinimapOriginY + 10 * o + 2,
 			ButtonNamesMask[o],
 			color,
 			9
@@ -793,13 +794,13 @@ function displayGenome(genome)
 	end
 
 	-- Correctly positioning network neurons
-	for n=1,4 do
+	for n=1,4 do -- Why n=1,4???
 		for _,gene in pairs(genome.genes) do
 			if gene.enabled then
 				local c1 = cells[gene.into]
 				local c2 = cells[gene.out]
 				if gene.into > NumInputs and gene.into <= MaxNodes then
-					c1.x = 0.75*c1.x + 0.25*c2.x
+					c1.x = 0.75 * c1.x + 0.25 * c2.x
 					if c1.x >= c2.x then
 						c1.x = c1.x - 40
 					end
@@ -810,7 +811,7 @@ function displayGenome(genome)
 					if c1.x > 220 then
 						c1.x = 220
 					end
-					c1.y = 0.75*c1.y + 0.25*c2.y
+					c1.y = 0.75 * c1.y + 0.25 * c2.y
 
 				end
 				if gene.out > NumInputs and gene.out <= MaxNodes then
@@ -912,17 +913,17 @@ function displayGenome(genome)
 		end
 	end
 
-	if forms.ischecked(showMutationRates) then
-		local pos = 100
-		for mutation,rate in pairs(genome.mutationRates) do
-			gui.drawText(100, pos, mutation .. ": " .. rate, 0xFF000000, 10)
-			pos = pos + 8
-		end
-	end
+	-- if forms.ischecked(showMutationRates) then
+	-- 	local pos = 100
+	-- 	for mutation,rate in pairs(genome.mutationRates) do
+	-- 		gui.drawText(100, pos, mutation .. ": " .. rate, 0xFF000000, 10)
+	-- 		pos = pos + 8
+	-- 	end
+	-- end
 end
 
 function writeFile(filename)
-	local file = io.open("pool/" .. filename, "w")
+	local file = io.open(filename, "w")
 	file:write(Pool.generation .. "\n")
 	file:write(Pool.maxFitness .. "\n")
 	file:write(#Pool.species .. "\n")
@@ -956,42 +957,49 @@ function writeFile(filename)
 end
 
 function loadFile(filename)
-	local file = io.open("pool/" .. filename, "r")
+	local file = io.open(filename, "r")
 	Pool = newPool()
 	Pool.generation = file:read("*number")
 	Pool.maxFitness = file:read("*number")
-	forms.settext(maxFitnessLabel, "Max Fitness: " .. math.floor(Pool.maxFitness))
+	forms.settext(maxFitnessLabel, math.floor(Pool.maxFitness))
 	local numSpecies = file:read("*number")
 	for s=1,numSpecies do
 		local species = newSpecies()
-		table.insert(Pool.species, species)
 		species.topFitness = file:read("*number")
 		species.staleness = file:read("*number")
 		local numGenomes = file:read("*number")
 		for g=1,numGenomes do
 			local genome = newGenome()
-			table.insert(species.genomes, genome)
 			genome.fitness = file:read("*number")
 			genome.maxneuron = file:read("*number")
 			local line = file:read("*line")
 			while line ~= "done" do
 				genome.mutationRates[line] = file:read("*number")
 				line = file:read("*line")
-			end
+			end 
 			local numGenes = file:read("*number")
 			for n=1,numGenes do
 				local gene = newGene()
-				table.insert(genome.genes, gene)
 				local enabled
-				gene.into, gene.out, gene.weight, gene.innovation, enabled = file:read("*number", "*number", "*number", "*number", "*number")
+				local strToNum = {}
+				for i in string.gmatch(file:read("*line"), "%S+") do
+					strToNum[#strToNum + 1] = tonumber(i)
+				end
+				gene.into = strToNum[1]
+				gene.out = strToNum[2]
+				gene.weight = strToNum[3]
+				gene.innovation = strToNum[4]
+				enabled = strToNum[5]
 				if enabled == 0 then
 					gene.enabled = false
 				else
 					gene.enabled = true
 				end
-
+				table.insert(genome.genes, gene)
 			end
+			table.insert(species.genomes, genome)
 		end
+		table.insert(Pool.species, species)
 	end
 	file:close()
 
@@ -1006,12 +1014,12 @@ end
 
 function savePool()
 	local filename = forms.gettext(saveLoadFile)
-	writeFile(filename)
+	writeFile("pool/" .. filename)
 end
 
 function loadPool()
 	local filename = forms.gettext(saveLoadFile)
-	loadFile(filename)
+	loadFile("pool/" .. filename)
 end
 
 function playTop()
@@ -1030,12 +1038,17 @@ function playTop()
 	Pool.currentSpecies = maxs
 	Pool.currentGenome = maxg
 	Pool.maxFitness = maxfitness
-	forms.settext(maxFitnessLabel, "Max Fitness: " .. math.floor(Pool.maxFitness))
+	forms.settext(maxFitnessLabel, math.floor(Pool.maxFitness))
 	initializeRun()
 	Pool.currentFrame = Pool.currentFrame + 1
 	return
 end
 
-function computeFitness(y, hpDepleted) -- HP goes from 0 to 16
-	return -0.6 * (y - 377) + 3.5 * (Rightmost - 133) + 200 * Score -90 * (16 - hpDepleted)
+function computeFitness(y, hp)
+	-- y is the y-axis position (-377 is used to standardize the initial position as 0)
+	-- hp is Mega Man's health, which goes from 0 to 16 
+	-- Rightmost is the position far to the right reached (-133 is used to standardize the initial position as 0)
+	-- Score is computed based on how many Mega Man shots hit the enemies
+	local fitness = (-0.6 * (y - 377)) + (3.5 * (Rightmost - 133)) + (200 * Score) + (-90 * (16 - hp))
+	return fitness
 end
