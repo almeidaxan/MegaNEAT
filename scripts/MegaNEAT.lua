@@ -14,7 +14,7 @@ EnableMutationChance = 0.2
 DisableMutationChance = 0.4
 MaxNodes = 1000000
 StepSize = 0.1
-TimeoutConstant = 15
+TimeoutConstant = 100
 NumInputs = 16 * 14 + 1 -- 16 by 14 tiles in the minimap, +1 because of the bias
 ButtonNames = {"B", "Y", "Left", "Right"}
 ButtonNamesMask = {"Jump", "Shoot", "Left", "Right"}
@@ -84,10 +84,14 @@ while true do
 	local megamanY = memory.read_s16_le(0x0BB0) + 10
 	local megamanHP = memory.readbyte(0x0BCF)
 
+	local fitness = computeFitness(megamanY, megamanHP)
+
 	if megamanX > Rightmost then
 		Rightmost = megamanX
-		Timeout = TimeoutConstant
 	end
+
+	if fitness
+	Timeout = TimeoutConstant
 
 	Timeout = Timeout - 1
 
@@ -117,8 +121,6 @@ while true do
 
 	-- Restarts the run if the individual dies or times out
 	if megamanHP == 0 or Timeout + timeoutBonus <= 0 then
-		local fitness = computeFitness(megamanY, megamanHP)
-
 		if fitness <= 0 then
 			fitness = -1
 		end
@@ -133,12 +135,12 @@ while true do
 		end
 
 		-- Prints the indivual results to the console
-		console.writeline(
-			"Gen " .. Pool.generation ..
-			" species " .. Pool.currentSpecies ..
-			" genome " .. Pool.currentGenome ..
-			" fitness: " .. fitness
-		)
+		-- console.writeline(
+		-- 	"Gen " .. Pool.generation ..
+		-- 	" species " .. Pool.currentSpecies ..
+		-- 	" genome " .. Pool.currentGenome ..
+		-- 	" fitness: " .. fitness
+		-- )
 
 		-- Finds the next individual whose fitness wasn't yet measured
 		Pool.currentSpecies = 1

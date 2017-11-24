@@ -671,7 +671,8 @@ function clearJoypad()
 end
 
 function initializeRun()
-	local rand = math.random(1,3)
+	-- local rand = math.random(1,3)
+	local rand = 3
 	savestate.loadslot(rand)
 	
 	-- Update the diff variables with initial Mega Man positions in each savestate
@@ -1056,6 +1057,6 @@ function computeFitness(y, hp)
 	-- hp is Mega Man's health, which goes from 0 to 16 
 	-- Rightmost is the position far to the right reached (-DiffRightmost is used to standardize the initial position as 0)
 	-- Score is computed based on how many Mega Man shots hit the enemies
-	local fitness = (-0.6 * (y - DiffY)) + (3.5 * (Rightmost - DiffRightmost)) + (200 * Score) + (-90 * (16 - hp))
+	local fitness = (-0.6 * (y - DiffY)) + (0.1 * (Rightmost - DiffRightmost)) + (100 * Score) + (-100 * (16 - hp))
 	return fitness
 end
