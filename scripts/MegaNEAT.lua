@@ -12,16 +12,16 @@ NodeMutationChance = 0.50
 BiasMutationChance = 0.40
 EnableMutationChance = 0.2
 DisableMutationChance = 0.4
-MaxNodes = 1000000
+MaxNodes = 10000
 StepSize = 0.1
-TimeoutConstant = 100
+TimeoutConstant = 50
 NumInputs = 16 * 14 + 1 -- 16 by 14 tiles in the minimap, +1 because of the bias
 ButtonNames = {"B", "Y", "Left", "Right"}
 ButtonNamesMask = {"Jump", "Shoot", "Left", "Right"}
 NumOutputs = #ButtonNames
 DiffY = 0
 DiffRightmost = 0
--- SavestateSlot = 1
+LastFrameFitness = 0
 
 -- Loading scripts with functions
 dofile("func-auxiliary.lua")
@@ -78,24 +78,40 @@ while true do
 		displayGenome(genome)
 	end
 
-	joypad.set(controller)
+	joypad.set(Controller)
 
 	local megamanX = memory.read_s16_le(0x0BAD) + 5
 	local megamanY = memory.read_s16_le(0x0BB0) + 10
 	local megamanHP = memory.readbyte(0x0BCF)
 
-	local fitness = computeFitness(megamanY, megamanHP)
+	-- Fixes HP overflowing
+	if megamanHP >= 128 then
+		megamanHP = megamanHP - 128
+	end
 
+	-- Updates rightmost with the maximum x-position achieved
 	if megamanX > Rightmost then
 		Rightmost = megamanX
 	end
 
-	if fitness
-	Timeout = TimeoutConstant
+	-- Resets the timeout if the fitness is increasing, and updates the fitness from the last frame
+	local fitness = computeFitness(megamanY, megamanHP)
+	if fitness > LastFrameFitness then
+		Timeout = TimeoutConstant
+	end
+
+	LastFrameFitness = fitness
 
 	Timeout = Timeout - 1
-
 	local timeoutBonus = Pool.currentFrame / 4
+
+	-- Draws a clock and displays timeout value
+	if not forms.ischecked(hideNetwork) then
+		gui.drawEllipse(6, 212, 8, 8, 0xC0000000, 0xFFFFFFFF)
+		gui.drawLine(10, 214, 10, 216, 0xFF000000)
+		gui.drawLine(10, 216, 11, 217, 0xFF000000)
+		gui.drawText(15, 209, math.ceil(Timeout + timeoutBonus), 0xFFFFFFFF, 0x00000000, 11)
+	end
 
 	-- Define a score based on shots that hit enemies
 	local bulletsx = getBulletsX()
@@ -131,7 +147,6 @@ while true do
 			Pool.maxFitness = fitness
 			forms.settext(maxFitnessLabel, math.floor(Pool.maxFitness))
 			writeFile("pool/backup." .. Pool.generation .. ".pool")
-			-- writeFile("pool/backup." .. Pool.generation .. "." .. SavestateSlot .. ".pool")
 		end
 
 		-- Prints the indivual results to the console
@@ -148,6 +163,9 @@ while true do
 		while fitnessAlreadyMeasured() do
 			nextGenome()
 		end
+
+		-- Resets the max achieved fitness
+		LastFrameFitness = 0
 
 		-- Restart the individual
 		initializeRun()

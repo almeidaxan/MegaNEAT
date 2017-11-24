@@ -646,7 +646,6 @@ function newGeneration()
 	Pool.generation = Pool.generation + 1
 
 	writeFile("pool/backup." .. Pool.generation .. ".pool")
-	-- writeFile("pool/backup." .. Pool.generation .. "." .. SavestateSlot .. ".pool")
 end
 
 function initializePool()
@@ -661,13 +660,13 @@ function initializePool()
 end
 
 function clearJoypad()
-	controller = {}
+	Controller = {}
 
 	for b = 1,NumOutputs do
-		controller["P1 " .. ButtonNames[b]] = false
+		Controller["P1 " .. ButtonNames[b]] = false
 	end
 
-	joypad.set(controller)
+	joypad.set(Controller)
 end
 
 function initializeRun()
@@ -701,14 +700,19 @@ function evaluateCurrent()
 	local species = Pool.species[Pool.currentSpecies]
 	local genome = species.genomes[Pool.currentGenome]
 
-	controller = evaluateNetwork(genome.network)
+	Controller = evaluateNetwork(genome.network)
 
-	if controller["P1 Left"] and controller["P1 Right"] then
-		controller["P1 Left"] = false
-		controller["P1 Right"] = false
+	if Controller["P1 Left"] and Controller["P1 Right"] then
+		Controller["P1 Left"] = false
+		Controller["P1 Right"] = false
 	end
 
-	joypad.set(controller)
+	-- Do not hold the fire button, because that's not efficient
+	if Controller["P1 Y"] and Pool.currentFrame % 2 == 0 then
+		Controller["P1 Y"] = false
+	end
+
+	joypad.set(Controller)
 end
 
 function nextGenome()
@@ -1054,9 +1058,10 @@ end
 
 function computeFitness(y, hp)
 	-- y is the y-axis position (-DiffY is used to standardize the initial position as 0)
+		-- (Controller["P1 B"] and 1 or 0) serves to activate the use of y ONLY IF the player is jumping
 	-- hp is Mega Man's health, which goes from 0 to 16 
 	-- Rightmost is the position far to the right reached (-DiffRightmost is used to standardize the initial position as 0)
 	-- Score is computed based on how many Mega Man shots hit the enemies
-	local fitness = (-0.6 * (y - DiffY)) + (0.1 * (Rightmost - DiffRightmost)) + (100 * Score) + (-100 * (16 - hp))
+	local fitness = (Controller["P1 B"] and 1 or 0) * (-0.6 * (y - DiffY)) + (1.5 * (Rightmost - DiffRightmost)) + (100 * Score) + (-20 * (16 - hp))
 	return fitness
 end
