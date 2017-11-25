@@ -8,8 +8,8 @@ MutateConnectionsChance = 0.25
 PerturbChance = 0.90
 CrossoverChance = 0.75
 LinkMutationChance = 2.0
-NodeMutationChance = 0.50
-BiasMutationChance = 0.40
+NodeMutationChance = 0.5
+BiasMutationChance = 0.4
 EnableMutationChance = 0.2
 DisableMutationChance = 0.4
 MaxNodes = 10000
@@ -144,18 +144,14 @@ while true do
 		genome.fitness = fitness
 
 		if fitness > Pool.maxFitness then
+			console.writeline(
+				"Max Fitness increased from " .. Pool.maxFitness ..
+				" to " .. fitness
+			)
 			Pool.maxFitness = fitness
 			forms.settext(maxFitnessLabel, math.floor(Pool.maxFitness))
 			writeFile("pool/backup." .. Pool.generation .. ".pool")
 		end
-
-		-- Prints the indivual results to the console
-		-- console.writeline(
-		-- 	"Gen " .. Pool.generation ..
-		-- 	" species " .. Pool.currentSpecies ..
-		-- 	" genome " .. Pool.currentGenome ..
-		-- 	" fitness: " .. fitness
-		-- )
 
 		-- Finds the next individual whose fitness wasn't yet measured
 		Pool.currentSpecies = 1

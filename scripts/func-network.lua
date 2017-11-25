@@ -290,9 +290,9 @@ function pointMutate(genome)
 	for i=1,#genome.genes do
 		local gene = genome.genes[i]
 		if math.random() < PerturbChance then
-			gene.weight = gene.weight + math.random() * step*2 - step
+			gene.weight = gene.weight + math.random() * step * 2 - step
 		else
-			gene.weight = math.random()*4-2
+			gene.weight = math.random() * 4 - 2
 		end
 	end
 end
@@ -670,8 +670,8 @@ function clearJoypad()
 end
 
 function initializeRun()
-	-- local rand = math.random(1,3)
-	local rand = 3
+	local rand = math.random(1,2)
+	-- local rand = 1
 	savestate.loadslot(rand)
 	
 	-- Update the diff variables with initial Mega Man positions in each savestate
@@ -723,6 +723,11 @@ function nextGenome()
 		Pool.currentSpecies = Pool.currentSpecies + 1
 		-- If no more species exists for the current generation, then go to the next generation
 		if Pool.currentSpecies > #Pool.species then
+			-- Prints some generation statistics
+			console.writeline(
+				"Generation: " .. Pool.generation ..
+				" | Max Fitness: " .. Pool.maxFitness
+			)
 			newGeneration()
 			Pool.currentSpecies = 1
 		end
@@ -1062,6 +1067,7 @@ function computeFitness(y, hp)
 	-- hp is Mega Man's health, which goes from 0 to 16 
 	-- Rightmost is the position far to the right reached (-DiffRightmost is used to standardize the initial position as 0)
 	-- Score is computed based on how many Mega Man shots hit the enemies
-	local fitness = (Controller["P1 B"] and 1 or 0) * (-0.6 * (y - DiffY)) + (1.5 * (Rightmost - DiffRightmost)) + (100 * Score) + (-20 * (16 - hp))
+	-- local fitness = (Controller["P1 Right"] and Controller["P1 B"] and 1 or 0) * (-0.6 * (y - DiffY)) + (1.5 * (Rightmost - DiffRightmost)) + (100 * Score) + (-20 * (16 - hp))
+	local fitness = (3 * (Rightmost - DiffRightmost)) + (100 * Score) + (-20 * (16 - hp))
 	return fitness
 end
