@@ -19,7 +19,6 @@ NumInputs = 16 * 14 + 1 -- 16 by 14 tiles in the minimap, +1 because of the bias
 ButtonNames = {"B", "Y", "Left", "Right"}
 ButtonNamesMask = {"Jump", "Shoot", "Left", "Right"}
 NumOutputs = #ButtonNames
-DiffY = 0
 DiffRightmost = 0
 LastFrameFitness = 0
 
@@ -62,6 +61,20 @@ while true do
 	--  1 = Floor (ground)
 	-- -1 = Enemies, enemies bullets/shots, items
 
+	MegamanX = memory.read_s16_le(0x0BAD) + 5
+	MegamanY = memory.read_s16_le(0x0BB0) + 10
+	MegamanHP = memory.readbyte(0x0BCF)
+
+	-- Fixes HP overflowing
+	if MegamanHP >= 128 then
+		MegamanHP = MegamanHP - 128
+	end
+
+	-- Updates rightmost with the maximum x-position achieved
+	if MegamanX > Rightmost then
+		Rightmost = MegamanX
+	end
+
 	-- For every 5 frames
 	if Pool.currentFrame % 5 == 0 then
 		Inputs = getInputs()
@@ -78,30 +91,29 @@ while true do
 		displayGenome(genome)
 	end
 
-	joypad.set(Controller)
-
-	local megamanX = memory.read_s16_le(0x0BAD) + 5
-	local megamanY = memory.read_s16_le(0x0BB0) + 10
-	local megamanHP = memory.readbyte(0x0BCF)
-
-	-- Fixes HP overflowing
-	if megamanHP >= 128 then
-		megamanHP = megamanHP - 128
-	end
-
-	-- Updates rightmost with the maximum x-position achieved
-	if megamanX > Rightmost then
-		Rightmost = megamanX
+	-- Do not hold the fire button, because that's not efficient
+	if Controller["P1 Y"] and Pool.currentFrame % 2 == 0 then
+		local tmpController = {}
+		for o=1,NumOutputs do
+			local button = "P1 " .. ButtonNames[o]
+			if Controller[button] then
+				tmpController[button] = true
+			else
+				tmpController[button] = false
+			end
+		end
+		tmpController["P1 Y"] = false
+		joypad.set(tmpController)
+	else
+		joypad.set(Controller)
 	end
 
 	-- Resets the timeout if the fitness is increasing, and updates the fitness from the last frame
-	local fitness = computeFitness(megamanY, megamanHP)
+	local fitness = computeFitness()
 	if fitness > LastFrameFitness then
 		Timeout = TimeoutConstant
 	end
-
 	LastFrameFitness = fitness
-
 	Timeout = Timeout - 1
 	local timeoutBonus = Pool.currentFrame / 4
 
@@ -136,7 +148,7 @@ while true do
 	end
 
 	-- Restarts the run if the individual dies or times out
-	if megamanHP == 0 or Timeout + timeoutBonus <= 0 then
+	if MegamanHP == 0 or Timeout + timeoutBonus <= 0 then
 		if fitness <= 0 then
 			fitness = -1
 		end
@@ -195,7 +207,7 @@ while true do
 			"(" .. math.floor(measured / total * 100) .. "%)",
 			0xFF000000, 0x00000000, 12)
 		gui.drawText(143, 2,
-			"Fitness: " .. math.floor(computeFitness(megamanY, megamanHP)),
+			"Fitness: " .. math.floor(computeFitness()),
 			0xFF000000, 0x00000000, 12)
 		gui.drawText(173, 15,
 			"Max: " .. math.floor(Pool.maxFitness),

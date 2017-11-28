@@ -323,7 +323,7 @@ function linkMutate(genome, forceBias)
 		return
 	end
 	newLink.innovation = newInnovation()
-	newLink.weight = math.random()*4-2
+	newLink.weight = math.random() * 4 - 2
 
 	table.insert(genome.genes, newLink)
 end
@@ -670,13 +670,12 @@ function clearJoypad()
 end
 
 function initializeRun()
-	local rand = math.random(1,2)
-	-- local rand = 1
+	-- local rand = math.random(1,2)
+	local rand = 1
 	savestate.loadslot(rand)
 	
 	-- Update the diff variables with initial Mega Man positions in each savestate
 	DiffRightmost = memory.read_s16_le(0x0BAD) + 5
-	DiffY = memory.read_s16_le(0x0BB0) + 10
 
 	clearJoypad()
 
@@ -705,13 +704,8 @@ function evaluateCurrent()
 	if Controller["P1 Left"] and Controller["P1 Right"] then
 		Controller["P1 Left"] = false
 		Controller["P1 Right"] = false
-	end
-
-	-- Do not hold the fire button, because that's not efficient
-	if Controller["P1 Y"] and Pool.currentFrame % 2 == 0 then
-		Controller["P1 Y"] = false
-	end
-
+	end 
+  
 	joypad.set(Controller)
 end
 
@@ -1061,13 +1055,19 @@ function playTop()
 	return
 end
 
-function computeFitness(y, hp)
+function computeFitness()
 	-- y is the y-axis position (-DiffY is used to standardize the initial position as 0)
 		-- (Controller["P1 B"] and 1 or 0) serves to activate the use of y ONLY IF the player is jumping
 	-- hp is Mega Man's health, which goes from 0 to 16 
 	-- Rightmost is the position far to the right reached (-DiffRightmost is used to standardize the initial position as 0)
 	-- Score is computed based on how many Mega Man shots hit the enemies
 	-- local fitness = (Controller["P1 Right"] and Controller["P1 B"] and 1 or 0) * (-0.6 * (y - DiffY)) + (1.5 * (Rightmost - DiffRightmost)) + (100 * Score) + (-20 * (16 - hp))
-	local fitness = (3 * (Rightmost - DiffRightmost)) + (100 * Score) + (-20 * (16 - hp))
+	local fitness = (2 * (Rightmost - DiffRightmost)) + (100 * Score) + (-50 * (16 - MegamanHP))
+	if Rightmost >= 2900 then
+		fitness = fitness + 4000 -- Bonus for climbing after the first checkpoint
+	end
+	if Rightmost >= 3500 then
+		fitness = fitness + 4000 -- Bonus for climbing after the second checkpoint
+	end
 	return fitness
 end
