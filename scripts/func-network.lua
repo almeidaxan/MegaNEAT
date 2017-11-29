@@ -35,12 +35,12 @@ end
 function newGenome()
 	local genome = {}
 	genome.genes = {}
-	genome.fitness = 0
 	genome.network = {}
+	genome.mutationRates = {}
+	genome.fitness = 0
 	genome.maxneuron = 0
 	genome.globalRank = 0
-	genome.mutationRates = {}
-	genome.mutationRates["connections"] = MutateConnectionsChance
+	genome.mutationRates["connections"] = ConnectionsMutateChance
 	genome.mutationRates["link"] = LinkMutationChance
 	genome.mutationRates["bias"] = BiasMutationChance
 	genome.mutationRates["node"] = NodeMutationChance
@@ -373,10 +373,10 @@ end
 
 function mutate(genome)
 	for mutation,rate in pairs(genome.mutationRates) do
-		if math.random(1,2) == 1 then
-			genome.mutationRates[mutation] = 0.95 * rate
+		if math.random(0,1) == 1 then
+			genome.mutationRates[mutation] = 0.90 * rate
 		else
-			genome.mutationRates[mutation] = 1.05263 * rate
+			genome.mutationRates[mutation] = 1.10 * rate
 		end
 	end
 
@@ -1062,7 +1062,7 @@ function computeFitness()
 	-- Rightmost is the position far to the right reached (-DiffRightmost is used to standardize the initial position as 0)
 	-- Score is computed based on how many Mega Man shots hit the enemies
 	-- local fitness = (Controller["P1 Right"] and Controller["P1 B"] and 1 or 0) * (-0.6 * (y - DiffY)) + (1.5 * (Rightmost - DiffRightmost)) + (100 * Score) + (-20 * (16 - hp))
-	local fitness = (2 * (Rightmost - DiffRightmost)) + (100 * Score) + (-50 * (16 - MegamanHP))
+	local fitness = (2 * (Rightmost - DiffRightmost)) + (20 * Score) + (-150 * (16 - MegamanHP))
 	if Rightmost >= 2900 then
 		fitness = fitness + 4000 -- Bonus for climbing after the first checkpoint
 	end
