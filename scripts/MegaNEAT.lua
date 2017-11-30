@@ -164,8 +164,8 @@ while true do
 	end
 
 	-- Restarts the run if the individual dies or times out
-	if MegamanHP == 0 or Timeout + timeoutBonus <= 0 then
-		if fitness <= 0 then
+	if MegamanHP == 0 or Timeout + timeoutBonus <= 0 or (Timeout + timeoutBonus > 400 and MegamanX < 800) then
+		if fitness <= 0 or (Timeout + timeoutBonus > 400 and MegamanX < 800) then
 			fitness = -1
 		end
 

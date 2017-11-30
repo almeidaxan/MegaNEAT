@@ -769,7 +769,13 @@ function displayGenome(genome)
 		cells[MaxNodes + o] = cell
 		local color
 		if cell.value > 0 then
-			color = 0xFFFFFFFF
+			if o == 4 and (MegamanX >= 2682 and MegamanX <= 2730 and MegamanY >= 256 and MegamanY <= 365) then	
+				color = 0xB0000000
+			elseif o == 4 and (MegamanX >= 3323 and MegamanX <= 3370 and MegamanY >= 256 and MegamanY <= 400) then	
+				color = 0xB0000000
+			else
+				color = 0xFFFFFFFF
+			end
 		else
 			color = 0xB0000000
 		end
@@ -805,7 +811,7 @@ function displayGenome(genome)
 	end
 
 	-- Correctly positioning network neurons
-	for n=1,4 do -- Why n=1,4???
+	for n=1,4 do -- Perform sort of a clustering algorithm here, it goes from 1 to 4 in order to converge
 		for _,gene in pairs(genome.genes) do
 			if gene.enabled then
 				local c1 = cells[gene.into]
@@ -858,7 +864,14 @@ function displayGenome(genome)
 				color
 			)
 		elseif n >= NumInputs or cell.value ~= 0 then
-			local color = math.floor((cell.value + 1) / 2 * 256)
+			local color
+			if n == 10004 and cell.value > 0 and (MegamanX >= 2682 and MegamanX <= 2730 and MegamanY >= 256 and MegamanY <= 365) then	
+				color = 0
+			elseif n == 10004 and cell.value > 0 and (MegamanX >= 3323 and MegamanX <= 3370 and MegamanY >= 256 and MegamanY <= 400) then	
+				color = 0
+			else
+				color = math.floor((cell.value + 1) / 2 * 256)
+			end
 			if color > 255 then color = 255 end
 			if color < 0 then color = 0 end
 			local opacity = 0xFF000000
