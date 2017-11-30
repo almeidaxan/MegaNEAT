@@ -249,10 +249,10 @@ function getInputs()
 	end
 
 	-- Draws items on the minimap (value = -1)
-	local items = getItems()
-	for i=1,#items do
-		inputs = updateInputs(items[i], screenX, screenY, inputs, -1)
-	end
+	-- local items = getItems()
+	-- for i=1,#items do
+	-- 	inputs = updateInputs(items[i], screenX, screenY, inputs, -1)
+	-- end
 
 	return inputs
 end

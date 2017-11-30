@@ -12,8 +12,8 @@ NodeMutationChance = 1.0 --0.5
 BiasMutationChance = 0.8 --0.4
 EnableMutationChance = 0.4 --0.2
 DisableMutationChance = 0.4 --0.4
-MaxNodes = 10000
 StepSize = 0.1 --0.1
+MaxNodes = 10000
 TimeoutConstant = 50
 NumInputs = 16 * 14 + 1 -- 16 by 14 tiles in the minimap, +1 because of the bias
 ButtonNames = {"B", "Y", "Left", "Right"}
@@ -54,6 +54,8 @@ event.onexit(destroyForm) -- Destroys the form whenever the script is stopped or
 
 -- Main execution loop
 while true do
+	memory.write_s16_le(0x0BA6, -31415)
+
 	-- Converts minimap info into a matrix of inputs
 	-- Inputs = getInputs()
 	-- LABELS OF THE INPUT MATRIX:
@@ -90,23 +92,37 @@ while true do
 	if not forms.ischecked(hideNetwork) then
 		displayGenome(genome)
 	end
+	
+	-- gui.drawText(5, 100,
+	-- 	"Seed: " .. memory.read_s16_le(0x0BA6),
+	-- 	0xFFFFFFFF, 0x00000000, 11)
+	-- gui.drawText(5, 110,
+	-- 	"Y " .. MegamanY,
+	-- 	0xFFFFFFFF, 0x00000000, 11)
 
-	-- Do not hold the fire button, because that's not efficient
-	if Controller["P1 Y"] and Pool.currentFrame % 2 == 0 then
-		local tmpController = {}
-		for o=1,NumOutputs do
-			local button = "P1 " .. ButtonNames[o]
-			if Controller[button] then
-				tmpController[button] = true
-			else
-				tmpController[button] = false
-			end
+	-- Copy the current controller to a temporary controlller
+	local tmpController = {}
+	for o=1,NumOutputs do
+		local button = "P1 " .. ButtonNames[o]
+		if Controller[button] then
+			tmpController[button] = true
+		else
+			tmpController[button] = false
 		end
-		tmpController["P1 Y"] = false
-		joypad.set(tmpController)
-	else
-		joypad.set(Controller)
 	end
+	-- Do not hold the fire button for every frame, because that's not efficient
+	if Controller["P1 Y"] and Pool.currentFrame % 2 == 0 then	
+		tmpController["P1 Y"] = false
+	end
+	-- Stop to kill mini-boss #1
+	if Controller["P1 Right"] and (MegamanX >= 2682 and MegamanX <= 2730 and MegamanY >= 256 and MegamanY <= 365) then	
+		tmpController["P1 Right"] = false
+	end
+	-- Stop to kill mini-boss #2
+	if Controller["P1 Right"] and (MegamanX >= 3323 and MegamanX <= 3370 and MegamanY >= 256 and MegamanY <= 400) then	
+		tmpController["P1 Right"] = false
+	end
+	joypad.set(tmpController)
 
 	-- Resets the timeout if the fitness is increasing, and updates the fitness from the last frame
 	local fitness = computeFitness()

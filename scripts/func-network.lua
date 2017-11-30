@@ -1056,12 +1056,9 @@ function playTop()
 end
 
 function computeFitness()
-	-- y is the y-axis position (-DiffY is used to standardize the initial position as 0)
-		-- (Controller["P1 B"] and 1 or 0) serves to activate the use of y ONLY IF the player is jumping
-	-- hp is Mega Man's health, which goes from 0 to 16 
+	-- MegamanHP is Mega Man's health, which goes from 0 to 16 
 	-- Rightmost is the position far to the right reached (-DiffRightmost is used to standardize the initial position as 0)
 	-- Score is computed based on how many Mega Man shots hit the enemies
-	-- local fitness = (Controller["P1 Right"] and Controller["P1 B"] and 1 or 0) * (-0.6 * (y - DiffY)) + (1.5 * (Rightmost - DiffRightmost)) + (100 * Score) + (-20 * (16 - hp))
 	local fitness = (2 * (Rightmost - DiffRightmost)) + (20 * Score) + (-150 * (16 - MegamanHP))
 	if Rightmost >= 2900 then
 		fitness = fitness + 4000 -- Bonus for climbing after the first checkpoint
